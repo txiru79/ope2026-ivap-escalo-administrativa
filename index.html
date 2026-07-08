@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Cuerpo Administrativo - IVAP</title>
+<style>
+  :root{
+    --ink:#1b2430; --paper:#f7f5f0; --card:#ffffff; --line:#dcd6c8;
+    --green:#2f5d4f; --green-dark:#1f3f36; --red:#8a2b2b; --gold:#a3742b; --muted:#6b6459;
+    --shadow: 0 1px 2px rgba(27,36,48,.06), 0 6px 20px rgba(27,36,48,.06);
+  }
+  body.dark{
+    --ink:#eae5da; --paper:#171b1f; --card:#20262c; --line:#343c42;
+    --green:#5fae95; --green-dark:#8fd3bd; --red:#e08787; --gold:#d9ac5f; --muted:#93968f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s;}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px;}
+  header.app{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:22px;gap:10px;}
+  header.app h1{font-size:1.3rem;letter-spacing:.02em;margin:0;font-weight:700;}
+  header.app .tag{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted);letter-spacing:.06em;white-space:nowrap;}
+  .headerRight{display:flex;align-items:center;gap:10px;}
+  .iconBtn{border:1px solid var(--line);background:var(--card);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:.95rem;line-height:1;color:var(--ink);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);padding:22px;margin-bottom:18px;}
+  h2.section{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:0 0 14px;font-family:ui-monospace,Menlo,monospace;border-bottom:1px solid var(--line);padding-bottom:8px;}
+  .btn{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;letter-spacing:.03em;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:2px;cursor:pointer;}
+  .btn.secondary{background:transparent;color:var(--ink);}
+  .btn.wide{width:100%;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .num-input,select.field{width:100px;padding:9px;font-family:ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:2px;font-size:.9rem;background:var(--card);color:var(--ink);}
+  select.field{width:auto;}
+  .tema-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:.86rem;max-height:300px;overflow-y:auto;padding-right:4px;}
+  @media (max-width:560px){.tema-grid{grid-template-columns:1fr;}}
+  .tema-item{display:flex;align-items:flex-start;gap:8px;line-height:1.3;padding:4px 0;border-bottom:1px dashed var(--line);}
+  .tema-item input{margin-top:4px;flex-shrink:0;}
+  .tema-actions{display:flex;gap:14px;margin:10px 0 14px;font-size:.8rem;}
+  .tema-actions a,.link-btn{color:var(--green);cursor:pointer;text-decoration:underline;background:none;border:none;font-size:.85rem;padding:0;font-family:inherit;}
+  .progress-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:16px;}
+  .progress-fill{height:100%;background:var(--green);transition:width .25s ease;}
+  .qmeta{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted);letter-spacing:.05em;margin-bottom:10px;text-transform:uppercase;display:flex;justify-content:space-between;}
+  .qtext{font-size:1.12rem;line-height:1.5;margin:0 0 20px;}
+  .option{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:3px;padding:13px 14px;margin-bottom:10px;cursor:pointer;font-size:.98rem;line-height:1.4;background:var(--card);transition:border-color .15s,background .15s;}
+  .option:hover{border-color:var(--green);}
+  .option .letter{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--gold);flex-shrink:0;}
+  .option.correct{border-color:var(--green);background:rgba(47,93,79,.12);}
+  .option.correct .letter{color:var(--green);}
+  .option.wrong{border-color:var(--red);background:rgba(138,43,43,.12);}
+  .option.wrong .letter{color:var(--red);}
+  .option.disabled{cursor:default;}
+  .feedback{margin-top:6px;padding:12px 14px;border-radius:3px;font-size:.88rem;line-height:1.5;}
+  .feedback.ok{background:rgba(47,93,79,.12);border:1px solid var(--green);color:var(--green-dark);}
+  .feedback.no{background:rgba(138,43,43,.12);border:1px solid var(--red);color:var(--red);}
+  .footer-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;}
+  .score-big{font-size:2.6rem;font-weight:700;font-family:ui-monospace,Menlo,monospace;}
+  .tema-result{display:flex;justify-content:space-between;font-size:.85rem;padding:7px 0;border-bottom:1px dashed var(--line);}
+  .badge{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;padding:2px 7px;border-radius:10px;background:var(--line);color:var(--ink);}
+  textarea{width:100%;min-height:140px;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;border:1px solid var(--line);border-radius:3px;padding:10px;background:var(--card);color:var(--ink);}
+  .small{font-size:.82rem;color:var(--muted);line-height:1.5;}
+  .flag{display:inline-block;width:14px;height:14px;border-radius:50%;background:conic-gradient(from 0deg,#d52b1e 0 25%,#eab308 25% 40%,#2f5d4f 40% 100%);margin-right:8px;vertical-align:-2px;}
+  .radioRow{display:flex;gap:16px;font-size:.88rem;margin:6px 0;flex-wrap:wrap;}
+  .radioRow label{display:flex;gap:6px;align-items:center;cursor:pointer;}
+  .statBar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;flex:1;margin:0 10px;}
+  .statBar > div{height:100%;background:var(--green);}
+  .statRow{display:flex;align-items:center;font-size:.82rem;padding:8px 0;border-bottom:1px dashed var(--line);}
+  .statRow .name{width:160px;flex-shrink:0;}
+  .statRow .pct{width:44px;text-align:right;font-family:ui-monospace,Menlo,monospace;flex-shrink:0;}
+  .timerBox{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:.95rem;padding:4px 10px;border:1px solid var(--line);border-radius:3px;}
+  .timerBox.low{color:var(--red);border-color:var(--red);}
+
+  /* Splash screen */
+  .splash{
+    position:fixed; inset:0; z-index:50;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    background: radial-gradient(ellipse at 50% 30%, rgba(163,116,43,.10), transparent 60%), var(--paper);
+    cursor:pointer; text-align:center; padding:24px;
+  }
+  .splash-flag{width:34px;height:34px;border-radius:50%;background:conic-gradient(from 0deg,#d52b1e 0 25%,#eab308 25% 40%,#2f5d4f 40% 100%);margin-bottom:26px;box-shadow:0 4px 18px rgba(0,0,0,.15);}
+  .splash-title{
+    font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    font-weight:700; letter-spacing:.02em; color:var(--ink);
+    font-size:clamp(2.4rem, 9vw, 4.2rem); line-height:1.05; margin:0;
+  }
+  .splash-subtitle{
+    font-family: ui-monospace, Menlo, monospace;
+    text-transform:uppercase; letter-spacing:.22em; color:var(--gold);
+    font-size:clamp(.9rem, 3vw, 1.15rem); margin:18px 0 0;
+  }
+  .splash-rule{width:64px;height:2px;background:var(--ink);margin:26px 0;opacity:.5;}
+  .splash-hint{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--muted);letter-spacing:.08em;margin-top:40px;animation:splashPulse 2s ease-in-out infinite;}
+  @keyframes splashPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+  .splash-credit{
+    position:fixed; bottom:22px; right:26px; z-index:51;
+    font-family:ui-monospace,Menlo,monospace; letter-spacing:.05em;
+    font-size:.8rem; color:var(--ink); opacity:.75;
+    padding:6px 12px; border:1px solid var(--line); border-radius:3px; background:var(--card);
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============ DATA: TEMARIO ============ */
+const TEMAS = {
+ 1:"Constitución: derechos y libertades fundamentales",2:"Organización territorial del Estado",
+ 3:"Derecho de la Unión Europea",4:"Organización política y administrativa de la CAE",
+ 5:"Competencias: Instituciones Comunes y Territorios Históricos",6:"Igualdad de mujeres y hombres. Violencia machista",
+ 7:"Administración electrónica",8:"Normalización lingüística del euskera",
+ 9:"Personal al servicio de las administraciones vascas",10:"Protección de datos personales",
+ 11:"Prevención de riesgos laborales (general)",12:"PRL: pantallas de visualización de datos",
+ 13:"Primeros auxilios",14:"Gobierno abierto",15:"Presupuesto de gastos",16:"Presupuesto de ingresos",
+ 17:"Estructura y organización del empleo público",18:"Acceso al empleo público y situaciones administrativas",
+ 19:"Gestión documental y archivos de oficina",20:"Registros electrónicos e interoperabilidad",
+ 21:"El documento y el expediente administrativo",22:"Legalizaciones de firmas y validación electrónica",
+ 23:"Derechos de la ciudadanía ante la Administración",24:"Atención a la ciudadanía y prestaciones públicas",
+ 25:"Comunicación escrita en la Administración",26:"Comunicación oral y no verbal",
+ 27:"Centros de documentación y bibliotecas",28:"Fuentes del derecho administrativo",
+ 29:"Organización administrativa: órganos",30:"El acto administrativo",
+ 31:"Procedimiento: principios generales, interesados",32:"Fases del procedimiento administrativo",
+ 33:"Revisión de actos y recursos administrativos",34:"Responsabilidad de las Administraciones Públicas"
+};
+
+// [tema, pregunta, [4 opciones], indiceCorrecta, explicacion(opcional)]
+const QUESTIONS = [
+[1,"¿En qué título de la Constitución Española se regulan los derechos y deberes fundamentales?",["Título I","Título II","Título III","Título VIII"],0],
+[1,"¿Qué artículo de la Constitución consagra el derecho a la tutela judicial efectiva?",["Artículo 14","Artículo 17","Artículo 24","Artículo 33"],2],
+[1,"Según el artículo 103 CE, la Administración Pública debe actuar con sometimiento pleno a...",["la ley y el Derecho","los reglamentos internos","el interés del Gobierno","la jurisprudencia"],0],
+[1,"¿Cuál de los siguientes es un principio de actuación de la Administración recogido en el art. 103 CE?",["Eficacia","Rentabilidad exclusiva","Discrecionalidad absoluta","Confidencialidad total"],0],
+[1,"Los derechos fundamentales y libertades públicas de la Sección 1ª gozan de una protección reforzada mediante...",["el recurso de amparo ante el Tribunal Constitucional","solo el recurso contencioso-administrativo","solo la ley orgánica","no tienen protección especial"],0],
+[1,"¿Qué artículo constitucional recoge el derecho de igualdad ante la ley?",["Artículo 14","Artículo 20","Artículo 35","Artículo 45"],0],
+[1,"Entre los deberes de la ciudadanía recogidos en la Constitución se encuentra:",["Defender España","Afiliarse a un partido político","Votar de forma obligatoria","Pagar cuota sindical"],0],
+[1,"La reforma de la Constitución está regulada en:",["El Título X","El Título I","El Título IV","El Título VII"],0],
+[2,"La organización territorial del Estado español se regula en:",["El Título VIII de la Constitución","El Título III de la Constitución","El Título V de la Constitución","El Título II de la Constitución"],0],
+[2,"El Estado se organiza territorialmente en:",["Municipios, provincias y Comunidades Autónomas","Solo provincias","Solo municipios","Regiones históricas exclusivamente"],0],
+[2,"La norma institucional básica de cada Comunidad Autónoma es:",["El Estatuto de Autonomía","La Constitución","El Reglamento del Parlamento autonómico","La Ley Orgánica del Poder Judicial"],0],
+[2,"Los Estatutos de Autonomía se aprueban mediante:",["Ley Orgánica","Real Decreto","Ley ordinaria","Decreto Legislativo"],0],
+[2,"¿Qué órgano tiene, junto con las Cortes Generales, la iniciativa para reformar un Estatuto de Autonomía?",["La Asamblea Legislativa de la Comunidad Autónoma","El Gobierno central en exclusiva","El Tribunal Constitucional","El Senado en exclusiva"],0],
+[2,"Las Comunidades Autónomas pueden asumir competencias sobre materias no atribuidas expresamente al Estado según:",["El artículo 149.3 CE","El artículo 2 CE","El artículo 1 CE","El artículo 168 CE"],0],
+[3,"¿Qué institución de la UE está formada por los Jefes de Estado o de Gobierno de los países miembros?",["El Consejo Europeo","El Consejo de la UE","La Comisión Europea","El Parlamento Europeo"],0],
+[3,"¿Qué institución representa los intereses generales de la UE y tiene el poder de iniciativa legislativa?",["La Comisión Europea","El Consejo Europeo","El Tribunal de Justicia","El Banco Central Europeo"],0],
+[3,"El Parlamento Europeo se compone de representantes elegidos:",["Por sufragio universal directo de la ciudadanía","Por los gobiernos nacionales","Por los parlamentos nacionales","Por el Consejo Europeo"],0],
+[3,"¿Qué característica define a un Reglamento de la UE?",["Tiene alcance general, es obligatorio en todos sus elementos y directamente aplicable","Necesita transposición nacional para tener efecto","Solo obliga a algunos Estados miembros","No es vinculante"],0],
+[3,"Una Directiva de la UE se caracteriza por:",["Obligar en cuanto al resultado, dejando a las autoridades nacionales la forma y los medios","Ser directamente aplicable sin transposición","Carecer de efecto vinculante","Aplicarse solo a instituciones europeas"],0],
+[3,"El Tribunal de Justicia de la Unión Europea tiene como función principal:",["Garantizar el respeto del Derecho en la interpretación y aplicación de los Tratados","Legislar en materia presupuestaria","Representar a los Estados miembros","Nombrar al presidente de la Comisión"],0],
+[3,"¿Qué institución de la UE ostenta el poder legislativo compartiéndolo con el Parlamento Europeo?",["El Consejo de la Unión Europea","El Tribunal de Justicia","El Banco Central Europeo","El Comité de las Regiones"],0],
+[3,"El Consejo Europeo define:",["Las orientaciones y prioridades políticas generales de la Unión","El articulado técnico de los reglamentos","Los presupuestos anuales en exclusiva","La política monetaria"],0],
+[4,"El Lehendakari es elegido por:",["El Parlamento Vasco","Sufragio universal directo","El Gobierno Vasco","Los Territorios Históricos"],0],
+[4,"El Parlamento Vasco ejerce, entre otras, la función de:",["Control de la acción del Gobierno Vasco","Gestión directa de los servicios públicos","Nombramiento de alcaldes","Dirección de las Diputaciones Forales"],0],
+[4,"El Gobierno Vasco está compuesto por:",["El Lehendakari y las Consejeras y Consejeros","Solo el Lehendakari","El Parlamento en pleno","Las Diputaciones Forales"],0],
+[4,"La distribución de competencias entre el Estado y la CAE se basa principalmente en:",["La Constitución y el Estatuto de Autonomía del País Vasco","Únicamente la Constitución","Únicamente el Estatuto","Los reglamentos internos de cada departamento"],0],
+[4,"¿Cómo se denomina el Estatuto de Autonomía del País Vasco?",["Estatuto de Gernika","Estatuto de Guernica-Bilbao","Estatuto Vasco de 1936","Carta Foral Vasca"],0],
+[4,"El Lehendakari dirige:",["La acción del Gobierno Vasco y su Administración","El Poder Judicial en el País Vasco","El Parlamento Vasco","Las Juntas Generales"],0],
+[5,"Las relaciones entre las Instituciones Comunes de la CAE y los Territorios Históricos se rigen por:",["La Ley de Territorios Históricos (LTH)","El Estatuto de Gernika en exclusiva","Un Real Decreto estatal","El Código Civil"],0],
+[5,"El Concierto Económico regula fundamentalmente:",["Las relaciones tributarias y financieras entre el Estado y el País Vasco","Las competencias educativas","Las competencias sanitarias","El régimen electoral"],0],
+[5,"Las Diputaciones Forales son órganos de gobierno de:",["Los Territorios Históricos","Los municipios","Las mancomunidades","El Gobierno Vasco"],0],
+[5,"Las Juntas Generales son:",["Los órganos forales con función normativa y de control en cada Territorio Histórico","Órganos exclusivos del Gobierno Vasco","Tribunales administrativos","Órganos consultivos del Parlamento"],0],
+[5,"Las competencias de las instituciones locales vascas se ejercen conforme a:",["El principio de autonomía local","La subordinación total a las Diputaciones","La Constitución en exclusiva","Decisiones discrecionales del Lehendakari"],0],
+[6,"La normativa autonómica vasca de igualdad tiene como objeto:",["Establecer principios y medidas para lograr la igualdad real de mujeres y hombres","Regular exclusivamente el empleo público","Regular el régimen electoral","Regular la fiscalidad"],0],
+[6,"Entre los principios generales de esta normativa se encuentra:",["La transversalidad de género","La neutralidad de género","La paridad exclusivamente electoral","La exclusión de los hombres de las políticas de igualdad"],0],
+[6,"Las administraciones públicas vascas deben contar con:",["Unidades u órganos para la igualdad","Un plan cada 10 años únicamente","Ningún órgano específico","Comités exclusivamente sindicales"],0],
+[6,"La integración de la perspectiva de género en la actuación de los poderes públicos implica:",["Valorar el impacto de género en toda decisión y actuación administrativa","Aplicarse solo en materia laboral","Aplicarse solo a las mujeres empleadas públicas","Ser opcional para cada departamento"],0],
+[6,"Las medidas para promover la igualdad en la normativa y actividad administrativa incluyen:",["El uso no sexista del lenguaje en documentos administrativos","La prohibición de contratar mujeres","La eliminación de permisos de maternidad","La reducción de derechos laborales"],0],
+[6,"La normativa vasca sobre violencia machista contra las mujeres busca principalmente:",["Garantizar la protección integral y la erradicación de dicha violencia","Regular exclusivamente el régimen penitenciario","Sustituir al Código Penal","Regular el Derecho mercantil"],0],
+[7,"La sede electrónica es:",["La dirección electrónica cuya titularidad corresponde a una Administración y a través de la cual se realizan trámites con plenas garantías","Cualquier página web informativa sin garantías","Un correo electrónico genérico","Una red social institucional"],0],
+[7,"El acceso electrónico de la ciudadanía a los servicios públicos es, con carácter general:",["Un derecho","Una obligación exclusiva de los funcionarios","Una opción reservada a empresas","Inexistente en la normativa"],0],
+[7,"Los sistemas de identificación y firma electrónica permiten:",["Acreditar la identidad y expresar el consentimiento en las relaciones con la Administración","Sustituir completamente al DNI físico","Eliminar cualquier control de acceso","Evitar el uso de certificados"],0],
+[7,"El expediente administrativo electrónico se compone de:",["El conjunto de documentos y actuaciones ordenados cronológicamente que forman un procedimiento","Solo el documento final","Únicamente los informes técnicos","Solo las notificaciones"],0],
+[7,"El archivo electrónico permite:",["La conservación y custodia de documentos electrónicos con garantías de integridad y autenticidad","La eliminación automática de documentos tras un mes","El acceso libre sin ningún control","Solo el almacenamiento temporal"],0],
+[7,"El funcionamiento electrónico del sector público exige garantizar, entre otros, el principio de:",["Seguridad","Gratuidad total sin excepciones","Opcionalidad de las Administraciones","Discrecionalidad absoluta"],0],
+[7,"El portal de internet de una Administración tiene como finalidad principal:",["Facilitar el acceso a la información y a los servicios de dicha Administración","Sustituir al Boletín Oficial","Ser un espacio exclusivamente publicitario","Gestionar exclusivamente las nóminas"],0],
+[8,"El perfil lingüístico de un puesto de trabajo determina:",["El nivel de conocimiento de euskera necesario para desempeñarlo","El salario del puesto","La categoría profesional exclusivamente","El horario laboral"],0],
+[8,"La preceptividad de un perfil lingüístico implica:",["Que su acreditación es requisito indispensable para acceder u ocupar el puesto","Que es meramente orientativa","Que solo aplica a cargos políticos","Que es voluntaria en todo caso"],0],
+[8,"Los planes de normalización lingüística tienen como objetivo:",["Avanzar en el uso del euskera en el funcionamiento interno y en las relaciones con la ciudadanía","Eliminar el uso del castellano","Regular exclusivamente la enseñanza","Limitarse a la toponimia"],0],
+[8,"¿Qué organismo impulsa la formación lingüística del personal de las administraciones vascas?",["El IVAP","El Ararteko","El Tribunal Vasco de Cuentas Públicas","La Autoridad Vasca de la Competencia"],0],
+[8,"La normalización lingüística en la administración pública vasca se enmarca en el principio de:",["Cooficialidad del euskera y el castellano","Oficialidad única del castellano","Oficialidad única del euskera","Ausencia de regulación"],0],
+[9,"El personal al servicio de las administraciones públicas vascas se clasifica principalmente en:",["Personal funcionario y personal laboral","Solo personal eventual","Solo personal directivo","Solo personal interino"],0],
+[9,"Entre los derechos del personal empleado público se encuentra:",["La carrera profesional y la promoción interna","La inamovilidad absoluta sin evaluación","La exención total de deberes","La libre elección de destino sin concurso"],0],
+[9,"El código ético y de conducta del personal empleado público recoge principios como:",["La integridad y la objetividad","La discrecionalidad ilimitada","La confidencialidad absoluta sin excepciones","La subordinación política exclusiva"],0],
+[9,"El régimen disciplinario del personal empleado público clasifica las faltas en:",["Muy graves, graves y leves","Solo graves y leves","Solo muy graves","Faltas administrativas y penales exclusivamente"],0],
+[9,"El personal eventual realiza funciones:",["De confianza o asesoramiento especial","De carrera funcionarial ordinaria","Exclusivamente técnicas regladas","Jurisdiccionales"],0],
+[9,"La provisión de puestos de trabajo del personal funcionario se realiza principalmente mediante:",["Concurso y libre designación","Sorteo","Antigüedad exclusiva","Herencia del puesto"],0],
+[10,"Un dato personal es:",["Toda información sobre una persona física identificada o identificable","Solo el nombre y apellidos","Solo datos bancarios","Solo datos de salud"],0],
+[10,"Entre los principios del tratamiento de datos personales se encuentra:",["La minimización de datos","La maximización de la recogida de datos","La conservación indefinida obligatoria","La ausencia de finalidad determinada"],0],
+[10,"Una base de legitimación para tratar datos personales es:",["El consentimiento del interesado","La mera conveniencia administrativa","La costumbre","La falta de oposición expresa"],0],
+[10,"Entre los derechos de las personas en materia de protección de datos se encuentra:",["El derecho de acceso, rectificación y supresión","El derecho a modificar los datos de terceros","El derecho a impedir cualquier tratamiento sin excepción","El derecho a la propiedad de los servidores"],0],
+[10,"Se consideran categorías especiales de datos, entre otros:",["Los datos de salud, origen étnico o creencias religiosas","El nombre y apellidos","El número de teléfono","La dirección postal"],0],
+[10,"El principio de licitud en el tratamiento de datos exige:",["Que el tratamiento se base en alguna de las condiciones de legitimación previstas legalmente","Que se pida solo permiso verbal","Que se informe únicamente si el interesado lo solicita","Que no exista ninguna base legal"],0],
+[10,"El derecho de supresión (\"derecho al olvido\") permite:",["Solicitar la eliminación de los datos personales cuando ya no sean necesarios o concurra otra causa legal","Eliminar datos de terceras personas libremente","Eliminar cualquier documento público sin motivo","Oponerse a la existencia de archivos históricos"],0],
+[11,"El derecho de protección frente a los riesgos laborales corresponde a:",["Todos los trabajadores y trabajadoras","Solo al personal directivo","Solo al personal funcionario","Solo al personal con contrato indefinido"],0],
+[11,"Entre los principios de la actividad preventiva se encuentra:",["Evitar los riesgos","Asumir siempre el riesgo existente","Minimizar la formación del personal","Priorizar la producción sobre la seguridad"],0],
+[11,"El Plan de Prevención de Riesgos Laborales debe incluir:",["La estructura organizativa, responsabilidades, funciones y prácticas para la prevención","Únicamente el organigrama de la empresa","Solo los datos económicos de la entidad","El convenio colectivo íntegro"],0],
+[11,"La evaluación de riesgos laborales tiene por objeto:",["Identificar los peligros existentes y valorar los riesgos para adoptar medidas preventivas","Justificar la reducción de plantilla","Calcular el salario del personal","Determinar el horario laboral"],0],
+[11,"La formación del personal trabajador en materia de PRL debe ser:",["Teórica y práctica, suficiente y adecuada al puesto de trabajo","Meramente informativa por escrito","Opcional para el trabajador","Impartida solo tras un accidente"],0],
+[11,"Entre las obligaciones empresariales en materia de PRL se encuentra:",["Garantizar la seguridad y salud del personal en todos los aspectos del trabajo","Delegar toda la responsabilidad en el trabajador","Evitar la vigilancia de la salud","Prescindir de la evaluación de riesgos"],0],
+[12,"El trabajo con pantallas de visualización de datos (PVD) exige, entre otras medidas:",["Pausas o cambios de actividad periódicos","Trabajar sin interrupción durante toda la jornada","Prohibir el uso de pantallas","Eliminar los descansos"],0],
+[12,"La normativa de PVD contempla el derecho del personal a:",["Una vigilancia periódica de la salud, incluida la vista","Un seguro médico privado obligatorio","Cambiar de puesto cada semana","Trabajar exclusivamente en remoto"],0],
+[12,"Entre los factores a considerar en un puesto con PVD se encuentra:",["La iluminación y el deslumbramiento","El color del mobiliario exclusivamente","La marca del ordenador","El sistema operativo instalado"],0],
+[12,"La ergonomía del puesto con pantalla busca principalmente:",["Adaptar el puesto de trabajo a la persona para prevenir trastornos musculoesqueléticos","Aumentar la velocidad de trabajo","Reducir costes de mobiliario","Estandarizar sillas sin ajuste"],0],
+[13,"Ante una persona inconsciente que respira, la posición recomendada es:",["La posición lateral de seguridad","Boca arriba con las piernas elevadas","Sentada con la cabeza hacia atrás","Boca abajo con los brazos extendidos"],0],
+[13,"Lo primero que se debe hacer al encontrar a una persona accidentada es:",["Garantizar la seguridad del lugar antes de actuar (proteger)","Moverla inmediatamente","Darle de beber agua","Llamar a sus familiares"],0],
+[13,"La secuencia básica de actuación en primeros auxilios se resume como:",["Proteger, Avisar, Socorrer","Correr, Avisar, Olvidar","Socorrer, Ignorar, Avisar","Avisar, Ignorar, Proteger"],0],
+[13,"Ante una hemorragia externa importante, se recomienda:",["Aplicar presión directa sobre la herida","Aplicar un torniquete como primera opción","Dar friegas de alcohol en la zona","Mover la extremidad afectada repetidamente"],0],
+[13,"Ante sospecha de obstrucción total de la vía aérea en un adulto consciente, se recomienda:",["La maniobra de Heimlich","Dar agua para facilitar la deglución","Dejar que la persona tosa sin intervenir en ningún caso","Colocarla tumbada boca arriba inmediatamente"],0],
+[14,"El gobierno abierto se basa fundamentalmente en los principios de:",["Transparencia, participación y colaboración","Secretismo, jerarquía y control","Opacidad y centralización","Discrecionalidad absoluta"],0],
+[14,"El derecho de acceso a la información pública permite a la ciudadanía:",["Solicitar y obtener información en poder de las administraciones públicas","Modificar los documentos administrativos","Vetar decisiones administrativas","Sustituir a los órganos de control"],0],
+[14,"Los principios de buen gobierno incluyen, entre otros:",["La objetividad y la responsabilidad en la gestión de los asuntos públicos","La opacidad en la rendición de cuentas","La discrecionalidad sin control","La prioridad del interés partidista"],0],
+[14,"La publicidad activa consiste en:",["La obligación de las administraciones de publicar de oficio determinada información sin necesidad de solicitud","La publicación de anuncios comerciales","La difusión exclusiva a través de prensa escrita","Una opción voluntaria sin obligación legal"],0],
+[14,"El acceso a la información pública puede ser limitado, entre otros supuestos, cuando afecte a:",["La seguridad pública o los datos personales de terceros","Los horarios de atención al público","La ubicación de las oficinas","El organigrama general de la institución"],0],
+[15,"La aplicación presupuestaria es:",["La unidad que identifica cada crédito dentro del presupuesto de gastos","El importe total del presupuesto","Un tipo de impuesto","Un documento contable de ingresos"],0],
+[15,"La vinculación presupuestaria hace referencia a:",["El nivel a partir del cual los créditos tienen carácter limitativo y vinculante","La obligación de gastar todo el crédito disponible","La relación entre dos administraciones distintas","Un tipo de aval bancario"],0],
+[15,"La fase de autorización del gasto supone:",["El acto por el que se aprueba la realización de un gasto por una cuantía determinada","El pago efectivo al proveedor","El reconocimiento de la obligación","La recepción del bien o servicio"],0],
+[15,"La disposición o compromiso del gasto es el acto mediante el cual:",["Se acuerda la realización del gasto, concretándolo de forma definitiva","Se paga la factura","Se elabora el presupuesto anual","Se fiscaliza el gasto por intervención"],0],
+[15,"Los pagos a justificar son:",["Fondos librados para atender gastos sin que se hayan podido acompañar previamente los documentos justificativos","Gastos ya justificados y cerrados","Ingresos pendientes de cobro","Créditos ampliables sin límite"],0],
+[15,"Los fondos anticipados o \"a justificar\" se caracterizan por:",["Exigir la justificación posterior de su aplicación","No requerir justificación alguna","Ser incompatibles con la normativa presupuestaria","Solo poder utilizarse para inversiones"],0],
+[16,"Los ingresos públicos se clasifican, entre otros criterios, en:",["Ingresos corrientes y de capital","Ingresos limitativos y vinculantes","Ingresos autorizados y dispuestos","Ingresos comprometidos y pagados"],0],
+[16,"Un derecho reconocido es:",["Aquel derecho de cobro que la Administración ha liquidado a su favor","Un ingreso ya cobrado","Un gasto ya pagado","Una previsión sin base legal"],0],
+[16,"La devolución de ingresos indebidos procede cuando:",["Se ha ingresado una cantidad que no correspondía legalmente","El contribuyente lo solicita sin motivo","Existe superávit presupuestario","Lo decide discrecionalmente cada departamento"],0],
+[16,"Los derechos reconocidos pendientes de cobro son aquellos:",["Ya liquidados pero aún no ingresados en tesorería","Ya cobrados y contabilizados","Anulados por prescripción","Correspondientes a ejercicios futuros exclusivamente"],0],
+[16,"Entre los documentos contables de ingresos se encuentra:",["El mandamiento de ingreso","La orden de pago","El documento de retención de crédito","La propuesta de gasto"],0],
+[17,"La Relación de Puestos de Trabajo (RPT) es:",["El instrumento técnico que ordena y clasifica los puestos de trabajo de una Administración","El listado de personal jubilado","El convenio colectivo vigente","El registro de entrada y salida de documentos"],0],
+[17,"Los Cuerpos y Escalas agrupan al personal funcionario según:",["Su titulación y las funciones que tienen encomendadas","Su antigüedad exclusiva","Su lugar de residencia","Su sexo"],0],
+[17,"La RPT debe recoger, entre otros datos:",["La denominación, tipo y sistema de provisión de cada puesto","Únicamente el nombre del titular del puesto","El horario personal de cada empleado","El domicilio particular de cada trabajador"],0],
+[17,"La clasificación en Cuerpos y Escalas tiene como finalidad:",["Ordenar al personal funcionario según su formación y especialización","Repartir el presupuesto entre departamentos","Fijar el calendario laboral anual","Determinar la ubicación física de las oficinas"],0],
+[17,"La modificación de la RPT corresponde, con carácter general:",["Al órgano competente en materia de función pública, respetando el procedimiento establecido","A cada trabajador de forma individual","Únicamente a los sindicatos","A cualquier ciudadano que lo solicite"],0],
+[18,"El acceso al empleo público se rige, entre otros, por los principios de:",["Igualdad, mérito y capacidad","Antigüedad exclusiva","Libre designación general","Sorteo puro"],0],
+[18,"Los sistemas selectivos habituales de acceso al empleo público son:",["Oposición, concurso y concurso-oposición","Sorteo y herencia","Libre designación exclusiva","Adjudicación directa"],0],
+[18,"La provisión de puestos de trabajo mediante concurso valora principalmente:",["Los méritos alegados y acreditados por las personas candidatas","Únicamente la entrevista personal","La antigüedad en la empresa privada","El sorteo entre aspirantes"],0],
+[18,"La situación administrativa de \"servicio activo\" implica que la persona funcionaria:",["Ocupa y desempeña efectivamente su puesto de trabajo","Está suspendida de empleo y sueldo","Ha sido separada definitivamente del servicio","Se encuentra jubilada"],0],
+[18,"La excedencia voluntaria es una situación administrativa que supone:",["El cese temporal en el desempeño del puesto por decisión de la persona interesada","El cese definitivo de la relación funcionarial","El traslado forzoso a otro puesto","Una sanción disciplinaria"],0],
+[19,"El archivo de oficina es aquel que:",["Custodia la documentación en la fase inicial de tramitación, mientras es de uso frecuente","Conserva documentación histórica de más de 100 años","Solo admite documentos en papel","Depende exclusivamente del Parlamento"],0],
+[19,"El Sistema de Archivo de la Administración Pública de la CAE tiene como finalidad:",["Garantizar la organización, conservación y accesibilidad de los documentos a lo largo de su ciclo de vida","Eliminar documentos periódicamente sin criterio","Digitalizar exclusivamente los documentos antiguos","Sustituir a los registros de entrada y salida"],0],
+[19,"La documentación electrónica exige garantizar especialmente:",["La autenticidad, integridad y conservación del documento","Su impresión obligatoria en papel","Su eliminación tras la firma","Su acceso público sin restricciones en todo caso"],0],
+[19,"El ciclo de vida de un documento comprende, entre otras, las fases de:",["Tramitación, archivo intermedio y archivo histórico","Redacción, firma y destrucción inmediata","Recepción, registro y pérdida","Creación y publicación exclusivamente"],0],
+[19,"La valoración documental permite determinar:",["Qué documentos se conservan y cuáles pueden eliminarse, y en qué plazos","El precio de venta de los documentos","El color de las carpetas de archivo","El idioma en que se redactan los documentos"],0],
+[20,"El registro electrónico permite:",["La presentación de documentos por la ciudadanía las 24 horas del día, todos los días del año","La presentación solo en horario de oficina","Únicamente la salida de documentos","La eliminación de solicitudes duplicadas automáticamente"],0],
+[20,"El Sistema de intercambio registral tiene como objetivo:",["Permitir el intercambio de asientos registrales entre distintas administraciones de forma interoperable","Centralizar toda la documentación en un único organismo","Sustituir a la sede electrónica","Eliminar el registro de salida"],0],
+[20,"La interoperabilidad entre administraciones públicas busca:",["Que los sistemas de información puedan compartir datos y servicios entre sí","Que cada administración use un formato de archivo incompatible","Limitar el acceso entre departamentos","Evitar la digitalización de documentos"],0],
+[20,"Un asiento registral electrónico debe recoger, entre otros datos:",["Número, fecha y hora de presentación del documento","El sueldo del funcionario que lo tramita","El color del expediente","El horario de comida del registro"],0],
+[20,"El registro de salida de documentos tiene como función:",["Dejar constancia de los documentos oficiales que se remiten a otras personas u órganos","Recibir exclusivamente solicitudes ciudadanas","Archivar documentos históricos","Gestionar nóminas del personal"],0],
+[21,"El expediente administrativo es:",["El conjunto ordenado de documentos que sirven de antecedente para la resolución de un procedimiento","Cualquier documento suelto sin relación entre sí","Solo la resolución final","Un documento exclusivamente electrónico"],0],
+[21,"Tienen derecho a acceder al expediente administrativo, con carácter general:",["Las personas interesadas en el procedimiento","Cualquier persona sin límite alguno","Solo los funcionarios que lo tramitan","Ninguna persona ajena a la Administración"],0],
+[21,"La Administración puede denegar el acceso al expediente cuando:",["Pueda afectar a datos personales de terceros o a otros derechos protegidos legalmente","Lo solicite la persona interesada","El expediente esté finalizado","El expediente sea muy voluminoso"],0],
+[21,"La expedición de copias y certificaciones de documentos administrativos debe realizarse:",["Garantizando su fidelidad con el original","Modificando el contenido si es necesario","Sin necesidad de autorización en ningún caso","Únicamente en soporte papel"],0],
+[21,"Una certificación administrativa es:",["Un documento que da fe de un hecho o acto contenido en un expediente","Una simple fotocopia sin valor","Un borrador de resolución","Una notificación al interesado"],0],
+[22,"La legalización de firmas tiene como finalidad:",["Dar fe de la autenticidad de una firma manuscrita","Traducir un documento a otro idioma","Eliminar la necesidad de firma","Sustituir al certificado electrónico"],0],
+[22,"El certificado electrónico permite:",["Vincular a una persona con una clave pública, acreditando su identidad en las comunicaciones electrónicas","Almacenar contraseñas de redes sociales","Sustituir al DNI físico en todo trámite presencial","Eliminar la necesidad de identificación"],0],
+[22,"La firma electrónica avanzada se caracteriza por:",["Permitir identificar al firmante y detectar cualquier cambio posterior en el documento firmado","No tener ningún valor jurídico","Ser idéntica a una firma escaneada","Requerir siempre presencia física"],0],
+[22,"La validación en la administración electrónica exige garantizar, entre otros aspectos:",["La identificación fehaciente de las partes","La eliminación del documento tras su firma","El anonimato absoluto del firmante","La ausencia de sistemas de verificación"],0],
+[23,"Entre los derechos de la ciudadanía frente a las Administraciones Públicas se encuentra:",["Ser tratada con respeto y deferencia","La obligación de conocer euskera","La obligación de aportar solo documentos originales sin excepción","El pago anticipado de cualquier trámite"],0],
+[23,"El derecho de acceso a archivos y registros públicos permite a la ciudadanía:",["Consultar documentos que obren en poder de la Administración, salvo limitaciones legales","Modificar el contenido de los expedientes","Eliminar documentos que no le interesen","Exigir la creación de nuevos archivos"],0],
+[23,"Entre los derechos de la ciudadanía se encuentra el de:",["No presentar documentos que ya obren en poder de la Administración","Presentar todos los documentos por duplicado siempre","Pagar tasas por cualquier consulta","Ser identificada obligatoriamente con certificado digital en todo trámite"],0],
+[23,"El derecho a formular alegaciones y aportar documentos en cualquier fase del procedimiento anterior al trámite de audiencia está reconocido:",["A las personas interesadas","Únicamente a los funcionarios","Únicamente a los abogados","A nadie, pues solo cabe en el trámite de audiencia"],0],
+[23,"El derecho a obtener información y orientación acerca de los requisitos de un trámite corresponde:",["A la ciudadanía en sus relaciones con la Administración","Solo a las empresas","Solo a los funcionarios","Solo a los representantes legales"],0],
+[24,"La atención ante quejas y reclamaciones ciudadanas debe realizarse:",["De forma ágil, respetuosa y dando respuesta motivada","Ignorando la mayoría de solicitudes","Solo por escrito y en euskera exclusivamente","Derivando siempre a los tribunales"],0],
+[24,"La atención a personas con discapacidad en la Administración exige garantizar, entre otros aspectos:",["La accesibilidad universal a la información y a los servicios","La exclusión de trámites telemáticos","La obligatoriedad de acompañante en todo caso","La eliminación de la atención presencial"],0],
+[24,"La atención intercultural en la administración vasca busca:",["Adaptar la atención a la diversidad cultural y lingüística de la ciudadanía","Imponer un único modelo cultural","Limitar el acceso a personas extranjeras","Eliminar la atención en euskera"],0],
+[24,"La información administrativa que se ofrece a la ciudadanía debe ser, entre otras características:",["Clara, veraz y accesible","Ambigua y técnica","Confidencial en todo caso","Exclusivamente verbal"],0],
+[24,"Una reclamación ciudadana se diferencia de una queja, entre otros aspectos, en que:",["La reclamación suele referirse a la disconformidad con una actuación concreta con posibles efectos jurídicos, mientras la queja expresa disconformidad general con el servicio","Son términos jurídicos idénticos sin diferencia alguna","La queja siempre se resuelve en vía judicial","La reclamación no requiere respuesta"],0],
+[25,"El lenguaje administrativo debe caracterizarse, entre otros rasgos, por:",["La claridad, precisión y sencillez","El uso de tecnicismos innecesarios","Frases largas y ambiguas","Un tono coloquial excesivo"],0],
+[25,"El uso no sexista del lenguaje administrativo implica:",["Evitar expresiones que invisibilicen o discriminen por razón de sexo","Utilizar siempre el masculino genérico","Eliminar cualquier referencia a personas","Usar exclusivamente desdoblamientos en todos los casos"],0],
+[25,"Una instancia es un documento mediante el cual:",["La ciudadanía solicita algo a la Administración","La Administración notifica una sanción","Se certifica un hecho","Se comunica entre departamentos internos exclusivamente"],0],
+[25,"Una notificación administrativa tiene como finalidad:",["Poner en conocimiento de la persona interesada un acto administrativo","Solicitar información a la ciudadanía","Certificar la autenticidad de una firma","Iniciar de oficio un procedimiento sancionador únicamente"],0],
+[25,"Una compulsa es:",["El cotejo de una copia con su documento original para acreditar su fidelidad","La firma electrónica de un documento","La notificación de una resolución","Un tipo de recurso administrativo"],0],
+[26,"En la atención telefónica a la ciudadanía es recomendable:",["Identificarse y escuchar activamente la consulta","Colgar si la persona tarda en explicarse","Evitar dar cualquier información","Hablar de forma técnica y rápida"],0],
+[26,"El desvío de llamadas debe realizarse:",["Informando previamente a la persona usuaria del motivo del desvío","Sin informar nunca a la persona usuaria","Únicamente fuera del horario de oficina","Solo si lo solicita un superior"],0],
+[26,"La comunicación no verbal en la atención presencial incluye:",["El tono de voz, los gestos y la postura corporal","Únicamente el contenido escrito","Solo el uso del correo electrónico","Solo las llamadas telefónicas"],0],
+[26,"Un criterio general en la atención en persona es:",["Mantener una actitud de escucha activa y trato cordial","Priorizar siempre la rapidez sobre la calidad de la respuesta","Evitar el contacto visual","Interrumpir constantemente a la persona usuaria"],0],
+[27,"Un centro de documentación tiene como función principal:",["Reunir, organizar y difundir información especializada","Vender libros al público","Gestionar exclusivamente archivos administrativos","Sustituir a los registros de entrada"],0],
+[27,"Una red bibliotecaria es:",["Un conjunto de bibliotecas que cooperan entre sí compartiendo recursos y servicios","Una única biblioteca central sin sucursales","Un sistema exclusivamente digital sin fondos físicos","Un archivo histórico de documentos administrativos"],0],
+[27,"Entre los servicios habituales de una biblioteca pública se encuentra:",["El préstamo de material bibliográfico","La expedición de certificados de empadronamiento","La tramitación de licencias de obra","La gestión de nóminas del personal"],0],
+[27,"El catálogo colectivo de una red de bibliotecas permite:",["Consultar de forma conjunta los fondos disponibles en todas las bibliotecas de la red","Eliminar el préstamo interbibliotecario","Limitar la consulta a una sola biblioteca","Sustituir a los sistemas de archivo administrativo"],0],
+[28,"El principio de jerarquía normativa implica que:",["Una norma de rango inferior no puede contradecir a una de rango superior","Todas las normas tienen el mismo valor","El reglamento prevalece siempre sobre la ley","Las normas autonómicas prevalecen siempre sobre las estatales"],0],
+[28,"El reglamento es una norma jurídica:",["Dictada por la Administración con rango inferior a la ley","Aprobada siempre por las Cortes Generales","De rango superior a la Constitución","Que no requiere publicación oficial"],0],
+[28,"El principio de legalidad de la Administración Pública implica que:",["La Administración debe actuar con sometimiento pleno a la ley y al Derecho","La Administración puede actuar libremente sin sujeción a norma alguna","Solo los jueces están sometidos a la ley","El reglamento puede derogar una ley"],0],
+[28,"Las fuentes del derecho administrativo incluyen, entre otras:",["La Constitución, la ley y el reglamento","Únicamente la costumbre","Únicamente los contratos privados","Únicamente las sentencias judiciales"],0],
+[28,"Un reglamento que contradiga lo dispuesto en una ley es:",["Nulo de pleno derecho","Válido si lo aprueba el Gobierno","Aplicable igualmente por razones de urgencia","De obligado cumplimiento en todo caso"],0],
+[29,"Un órgano administrativo se caracteriza por:",["Tener atribuidas funciones con efectos jurídicos frente a terceros","No tener ninguna competencia asignada","Ser siempre un órgano colegiado","Carecer de titular"],0],
+[29,"Un órgano colegiado es aquel:",["Integrado por varias personas que actúan de forma conjunta mediante deliberación y votación","Formado por una sola persona titular","Que actúa siempre por delegación","Que carece de presidencia"],0],
+[29,"Para la válida constitución de un órgano colegiado se requiere, entre otros requisitos:",["La asistencia de presidencia y secretaría, o de quienes les suplan, y de al menos la mitad de sus miembros","La asistencia de todos sus miembros sin excepción","Ningún quórum específico","La presencia exclusiva de la secretaría"],0],
+[29,"La avocación es una técnica por la cual:",["Un órgano superior asume el conocimiento de un asunto que corresponde resolver a un órgano inferior","Un órgano delega sus competencias en otro","Se crea un nuevo órgano administrativo","Se suprime un órgano existente"],0],
+[29,"La delegación de competencias supone:",["Que un órgano transfiere el ejercicio de una competencia a otro, conservando su titularidad","La pérdida definitiva de la competencia por el órgano delegante","La creación de un órgano nuevo","La avocación automática de competencias"],0],
+[30,"Un acto administrativo debe estar motivado, entre otros supuestos, cuando:",["Limite derechos subjetivos o intereses legítimos","Se trate de un acto de mero trámite sin efectos","Lo decida discrecionalmente el funcionario","Nunca es necesario motivarlo"],0],
+[30,"La eficacia de un acto administrativo, con carácter general, se produce:",["Desde el día en que se dicta, salvo que en él se disponga otra cosa","Siempre un mes después de dictarse","Nunca antes de su notificación, sin excepción alguna","Solo cuando lo decide el interesado"],0],
+[30,"El silencio administrativo negativo implica que, transcurrido el plazo sin resolución expresa:",["Se entiende desestimada la solicitud a los efectos de poder recurrir","Se entiende siempre estimada la solicitud","El procedimiento queda anulado","La Administración pierde toda competencia sobre el asunto"],0],
+[30,"Son actos nulos de pleno derecho, entre otros, los dictados:",["Prescindiendo total y absolutamente del procedimiento legalmente establecido","Con un simple defecto de forma subsanable","Fuera de un plazo mínimo","Por un órgano competente respetando el procedimiento"],0],
+[30,"La anulabilidad de un acto administrativo se produce cuando este incurre en:",["Cualquier infracción del ordenamiento jurídico distinta de las causas de nulidad de pleno derecho","Una causa de nulidad radical exclusivamente","Un defecto meramente ortográfico","Ausencia total de competencia del órgano"],0],
+[30,"La convalidación de un acto administrativo anulable consiste en:",["La subsanación de los vicios de que adolezca dicho acto","Su anulación definitiva","La creación de un acto totalmente nuevo","La pérdida de eficacia retroactiva del acto"],0],
+[31,"Tienen la condición de persona interesada en un procedimiento administrativo, entre otras:",["Quienes promuevan el procedimiento como titulares de derechos o intereses legítimos","Cualquier persona sin relación alguna con el asunto","Únicamente los funcionarios que lo tramitan","Solo quienes residan en el mismo municipio"],0],
+[31,"La abstención de una autoridad o personal al servicio de las Administraciones procede, entre otros casos, cuando:",["Tenga interés personal en el asunto de que se trate","El procedimiento sea muy complejo","El expediente sea muy antiguo","Lo solicite cualquier ciudadano sin motivo"],0],
+[31,"La recusación es un mecanismo mediante el cual:",["Las personas interesadas pueden promover que se aparte del asunto a quien tenga causa legal de abstención","La Administración archiva un expediente","Se inicia de oficio un procedimiento","Se notifica una resolución"],0],
+[31,"Entre los principios generales del procedimiento administrativo se encuentra:",["El principio de contradicción y audiencia a las personas interesadas","El principio de secreto absoluto del expediente","El principio de irrecurribilidad de todos los actos","El principio de gratuidad de cualquier tasa"],0],
+[31,"La no actuación de la persona en quien concurre causa de abstención:",["No implica necesariamente la invalidez del acto, sin perjuicio de la responsabilidad en que pueda incurrir","Anula automáticamente todo el procedimiento en todo caso","Es irrelevante jurídicamente","Solo puede alegarse por la propia autoridad afectada"],0],
+[32,"Las fases generales del procedimiento administrativo son:",["Iniciación, ordenación, instrucción y terminación","Solo iniciación y terminación","Solo instrucción y recurso","Notificación, archivo y sanción"],0],
+[32,"El procedimiento administrativo puede iniciarse:",["De oficio o a solicitud de persona interesada","Únicamente de oficio","Únicamente a instancia de parte","Únicamente por mandato judicial"],0],
+[32,"La fase de instrucción del procedimiento incluye, entre otros trámites:",["La práctica de prueba y el trámite de audiencia","Únicamente la notificación final","Únicamente el archivo del expediente","Únicamente el pago de tasas"],0],
+[32,"La terminación del procedimiento administrativo puede producirse, entre otras formas, por:",["Resolución, desistimiento o caducidad","Únicamente por resolución expresa","Únicamente por silencio administrativo","Únicamente por recurso judicial"],0],
+[32,"El trámite de audiencia consiste en:",["Dar a las personas interesadas la oportunidad de alegar y presentar documentos antes de la resolución","Dictar directamente la resolución final","Archivar el expediente sin más trámite","Notificar el inicio del procedimiento únicamente"],0],
+[33,"Los recursos administrativos ordinarios frente a actos que ponen fin a la vía administrativa son, con carácter general:",["El recurso de alzada y el recurso potestativo de reposición","Solo el recurso de casación","Solo el recurso contencioso-administrativo","Solo el recurso de amparo"],0],
+[33,"El recurso de alzada se interpone:",["Ante el órgano superior jerárquico de quien dictó el acto","Ante los tribunales ordinarios","Ante el mismo órgano que dictó el acto exclusivamente","Ante el Defensor del Pueblo"],0],
+[33,"La revisión de oficio permite a la Administración:",["Declarar la nulidad de sus propios actos nulos de pleno derecho","Crear nuevos procedimientos sancionadores","Modificar libremente cualquier acto sin límite","Delegar sus competencias en otro órgano"],0],
+[33,"La revocación de actos administrativos se refiere a:",["La posibilidad de dejar sin efecto actos de gravamen o desfavorables, siempre que no sea contraria al ordenamiento jurídico","La anulación de actos favorables sin límite alguno","Un tipo de recurso jurisdiccional","La delegación de competencias"],0],
+[33,"La rectificación de errores materiales, de hecho o aritméticos en los actos administrativos:",["Puede realizarse en cualquier momento por la Administración, de oficio o a instancia de parte","Requiere siempre un recurso judicial","Solo puede hacerse dentro del mes siguiente al acto","Está prohibida por el ordenamiento jurídico"],0],
+[33,"El recurso potestativo de reposición se caracteriza por:",["Interponerse ante el mismo órgano que dictó el acto que se impugna","Ser obligatorio en todo caso antes de acudir a la vía judicial","Resolverse siempre por un órgano superior","No poder alegarse contra actos que ponen fin a la vía administrativa"],0],
+[34,"La responsabilidad patrimonial de la Administración exige, entre otros requisitos:",["Que exista una lesión efectiva, evaluable económicamente e individualizada, derivada del funcionamiento de un servicio público","Que exista siempre dolo del funcionario","Que el daño sea inevitable en cualquier caso","Que lo declare previamente un juez penal"],0],
+[34,"La Administración puede exigir de oficio a su personal la responsabilidad en que haya incurrido cuando:",["Haya actuado con dolo, culpa o negligencia graves, previa instrucción del procedimiento correspondiente","Haya actuado siempre correctamente","Exista simple discrepancia de criterio técnico","Lo solicite un particular sin más trámite"],0],
+[34,"La acción para reclamar la responsabilidad patrimonial frente a la Administración prescribe, con carácter general:",["Al año de producido el hecho o acto que motive la indemnización","A los cinco años en todo caso","Nunca prescribe","A los diez días"],0],
+[34,"La responsabilidad de la Administración por el funcionamiento de los servicios públicos es, con carácter general:",["Objetiva, sin necesidad de que exista culpa o negligencia del personal","Siempre subjetiva, exigiendo dolo","Inexistente en el ordenamiento español","Exclusivamente penal"],0],
+[34,"Cuando la Administración indemniza a un particular por daños causados por dolo o culpa grave de su personal, puede:",["Repetir contra dicho personal mediante la acción de regreso","Asumir siempre el coste sin posibilidad de repercutirlo","Trasladar la responsabilidad al ciudadano perjudicado","Anular automáticamente la relación de servicio"],0],
+
+[1,"¿Qué capítulo del Título I regula los derechos y libertades fundamentales?",["El Capítulo II","El Capítulo I","El Capítulo III","El Capítulo IV"],0],
+[1,"El Defensor del Pueblo tiene como función:",["La defensa de los derechos del Título I mediante la supervisión de la actividad de las Administraciones","Dictar leyes orgánicas","Juzgar recursos de amparo","Nombrar al Gobierno"],0],
+[1,"La soberanía nacional reside en:",["El pueblo español","El Rey","Las Cortes Generales en exclusiva","El Gobierno"],0],
+[1,"España se constituye en un Estado social y democrático de Derecho según:",["El artículo 1 de la Constitución","El artículo 9 de la Constitución","El artículo 2 de la Constitución","El artículo 10 de la Constitución"],0],
+[1,"El artículo 9.3 de la Constitución garantiza, entre otros, el principio de:",["Irretroactividad de las disposiciones sancionadoras no favorables","Retroactividad absoluta de cualquier norma","Ausencia de control judicial de la Administración","Discrecionalidad total del legislador"],0],
+
+[2,"La provincia es una entidad local con personalidad jurídica propia determinada por:",["La agrupación de municipios","La agrupación de Comunidades Autónomas","El Estado central en exclusiva","El Parlamento Europeo"],0],
+[2,"El principio de solidaridad entre las Comunidades Autónomas está recogido en:",["El artículo 2 de la Constitución","El artículo 155 de la Constitución","El artículo 168 de la Constitución","El artículo 97 de la Constitución"],0],
+[2,"Las competencias exclusivas del Estado se recogen principalmente en:",["El artículo 149 de la Constitución","El artículo 148 de la Constitución","El artículo 137 de la Constitución","El artículo 143 de la Constitución"],0],
+[2,"El artículo 155 de la Constitución regula:",["La posibilidad de que el Estado adopte medidas de coerción frente a una Comunidad Autónoma que incumpla sus obligaciones","La reforma constitucional","La disolución de las Cortes Generales","El nombramiento del Gobierno"],0],
+
+[3,"El principio de primacía del Derecho de la Unión Europea implica que:",["En caso de conflicto, el Derecho de la UE prevalece sobre el Derecho nacional","El Derecho nacional siempre prevalece sobre el de la UE","Ambos ordenamientos son independientes sin relación","Solo se aplica a materias económicas"],0],
+[3,"El Tratado de Funcionamiento de la Unión Europea (TFUE) es:",["Uno de los tratados fundacionales que regula el funcionamiento de las instituciones y políticas de la UE","Un reglamento de aplicación directa","Una directiva sectorial","Un acuerdo bilateral entre dos Estados"],0],
+[3,"El Banco Central Europeo tiene como función principal:",["La política monetaria de la zona euro","La política agrícola común","El control fronterizo","La política exterior común"],0],
+[3,"Una decisión de la Unión Europea se caracteriza por:",["Ser obligatoria en todos sus elementos para sus destinatarios","Carecer de destinatarios concretos","Requerir siempre transposición nacional","Tener alcance general obligatorio para todos los Estados"],0],
+[3,"El principio de subsidiariedad en la Unión Europea implica que:",["La Unión solo interviene si los objetivos no pueden alcanzarse suficientemente por los Estados miembros","Los Estados nunca pueden legislar en materias comunitarias","La UE legisla siempre con preferencia sobre los Estados","Es un principio exclusivamente presupuestario"],0],
+
+[4,"El Parlamento Vasco se compone de representantes elegidos por sufragio:",["Universal, libre, directo y secreto","Indirecto en exclusiva","Censitario","Corporativo"],0],
+[4,"La sede del Gobierno Vasco se encuentra en:",["Vitoria-Gasteiz","Bilbao","San Sebastián","Iruña"],0],
+[4,"Las leyes del Parlamento Vasco se publican en:",["El Boletín Oficial del País Vasco (BOPV)","El Boletín Oficial del Estado en exclusiva","El Diario Oficial de la Unión Europea","Un boletín municipal"],0],
+[4,"El control parlamentario del Gobierno Vasco se ejerce, entre otros medios, a través de:",["Preguntas e interpelaciones","La designación directa de altos cargos","La revisión de oficio de actos","La potestad reglamentaria en exclusiva"],0],
+
+[5,"Los Territorios Históricos del País Vasco son:",["Álava, Bizkaia y Gipuzkoa","Solo Bizkaia","Álava, Bizkaia, Gipuzkoa y Navarra","Solo Gipuzkoa y Álava"],0],
+[5,"El Órgano de Coordinación Tributaria de Euskadi tiene como finalidad:",["Coordinar la aplicación del sistema tributario entre las instituciones vascas","Gestionar el gasto sanitario","Regular el urbanismo","Nombrar cargos forales"],0],
+[5,"Las Normas Forales son disposiciones:",["Aprobadas por las Juntas Generales de cada Territorio Histórico","Aprobadas por el Parlamento Vasco","Aprobadas por el Gobierno central","De rango reglamentario municipal"],0],
+
+[6,"El principio de acción positiva en materia de igualdad permite:",["Adoptar medidas específicas para corregir situaciones de desigualdad de partida","Prohibir cualquier medida diferenciada","Excluir a los hombres de toda medida de igualdad","Limitarse a campañas informativas"],0],
+[6,"Los diagnósticos de situación de mujeres y hombres tienen como finalidad:",["Conocer la situación de partida antes de diseñar medidas de igualdad","Sustituir a los presupuestos públicos","Evaluar exclusivamente al personal directivo","Sancionar a las empresas privadas"],0],
+[6,"El lenguaje e imagen no sexista debe aplicarse, entre otros ámbitos, en:",["Las comunicaciones y publicaciones de las administraciones públicas","Únicamente en la correspondencia privada","Únicamente en campañas electorales","Únicamente en el ámbito educativo"],0],
+
+[7,"El principio de \"solo una vez\" en administración electrónica implica que:",["La ciudadanía no debe aportar datos o documentos que ya obren en poder de una Administración","Cada trámite solo puede realizarse una vez en la vida","El certificado electrónico caduca tras un único uso","Cada persona solo puede tener una sede electrónica"],0],
+[7,"La carpeta ciudadana es una herramienta que permite:",["Consultar el estado de los trámites y expedientes propios ante la Administración","Almacenar archivos personales sin relación administrativa","Sustituir al DNI electrónico","Realizar pagos entre particulares"],0],
+[7,"Un trámite se considera realizado por vía electrónica cuando:",["Se efectúa a través de medios electrónicos con las garantías de identificación y seguridad exigidas","Se envía un correo electrónico informal","Se realiza una llamada telefónica","Se deja un mensaje de voz"],0],
+
+[8,"El Instituto Vasco de Administración Pública (IVAP) tiene, entre otras, la función de:",["La formación y selección del personal de las administraciones vascas, incluida la formación lingüística","La gestión exclusiva de tributos","La gestión sanitaria","El control de tráfico"],0],
+[8,"Los índices de obligado cumplimiento en materia de perfiles lingüísticos hacen referencia a:",["El porcentaje mínimo de puestos con perfil lingüístico preceptivo que debe alcanzar cada administración","El número de horas lectivas de euskera en la escuela","El presupuesto destinado a traducción","El número de traductores contratados"],0],
+[8,"La acreditación de los perfiles lingüísticos se realiza mediante:",["Títulos, certificados o pruebas homologadas","La mera declaración jurada del interesado","Un examen médico","La antigüedad en el puesto"],0],
+
+[9,"La carrera profesional del personal funcionario puede consistir en:",["La progresión en grados, categorías o escalones sin necesidad de cambiar de puesto de trabajo","Únicamente el ascenso a un puesto superior","Únicamente la formación no reglada","Únicamente la antigüedad económica"],0],
+[9,"La negociación colectiva del personal empleado público se desarrolla, entre otros órganos, en:",["Las mesas de negociación","Los tribunales de justicia","El Parlamento en pleno","El Consejo de Ministros"],0],
+[9,"El principio de imparcialidad en el código ético del personal empleado público implica:",["Actuar con neutralidad política y sin conflictos de interés","Favorecer a familiares en la tramitación","Aceptar regalos de valor de particulares","Anteponer el interés personal al público"],0],
+
+[10,"El Delegado o Delegada de Protección de Datos tiene como función:",["Supervisar el cumplimiento de la normativa de protección de datos dentro de la organización","Representar legalmente a la Administración en juicio","Auditar las cuentas públicas","Gestionar el registro de personal"],0],
+[10,"Una brecha de seguridad de datos personales debe notificarse, con carácter general:",["A la autoridad de control competente en el plazo establecido legalmente","Únicamente si lo solicita la persona afectada","Nunca, salvo orden judicial","Solo si afecta a más de mil personas"],0],
+[10,"El principio de limitación de la finalidad implica que los datos personales:",["Deben recogerse con fines determinados, explícitos y legítimos, y no tratarse de forma incompatible con dichos fines","Pueden usarse para cualquier finalidad futura sin restricción","Deben eliminarse inmediatamente tras su recogida","Solo pueden tratarse con fines comerciales"],0],
+[10,"El Registro de Actividades de Tratamiento (RAT) es:",["Un documento que recoge las actividades de tratamiento de datos realizadas por el responsable","Un tipo de sanción administrativa","Un certificado electrónico","Un archivo histórico"],0],
+
+[11,"Los Delegados y Delegadas de Prevención son:",["Representantes de los trabajadores con funciones específicas en materia de prevención de riesgos laborales","Cargos designados libremente por la empresa","Auditores externos obligatorios","Inspectores de trabajo"],0],
+[11,"El Comité de Seguridad y Salud es un órgano:",["Paritario de participación entre la entidad y el personal para la consulta regular de las actuaciones en PRL","Exclusivamente sindical","Exclusivamente empresarial","De carácter judicial"],0],
+[11,"La vigilancia de la salud del personal trabajador debe ser, con carácter general:",["Específica en función de los riesgos del puesto y, salvo excepciones legales, voluntaria","Obligatoria e idéntica para todos los puestos","Realizada solo tras un accidente","Opcional para la empresa en todo caso"],0],
+[11,"La coordinación de actividades empresariales en materia de PRL es obligatoria cuando:",["Concurren varias empresas en un mismo centro de trabajo","Trabaja una sola persona en el centro","El riesgo es inexistente","No hay maquinaria involucrada"],0],
+
+[12,"La distancia mínima recomendada entre los ojos y la pantalla en un puesto con PVD suele situarse:",["Entre 40 y 70 cm aproximadamente","A menos de 10 cm","A más de 2 metros","Es indiferente"],0],
+[12,"El descanso o cambio de actividad en el trabajo continuado con PVD busca prevenir principalmente:",["La fatiga visual y postural","La pérdida de datos informáticos","El consumo eléctrico","El desgaste del hardware"],0],
+[12,"La normativa de PVD se aplica a los puestos en los que se utiliza habitualmente:",["Un equipo con pantalla de forma significativa en la jornada laboral","Cualquier dispositivo electrónico de forma ocasional","Solo ordenadores portátiles","Solo pantallas táctiles"],0],
+
+[13,"El número de teléfono de emergencias único en la Unión Europea es:",["112","061","092","080"],0],
+[13,"Ante una quemadura leve, se recomienda:",["Enfriar la zona con agua a temperatura ambiente durante varios minutos","Aplicar hielo directamente sobre la piel","Aplicar pasta de dientes u otros remedios caseros","Reventar las ampollas que se formen"],0],
+[13,"Ante una posible fractura, se recomienda:",["Inmovilizar la zona afectada y evitar mover a la persona innecesariamente","Intentar recolocar el hueso","Aplicar calor directo","Obligar a la persona a caminar"],0],
+
+[14,"La rendición de cuentas en el gobierno abierto implica:",["Que las administraciones expliquen y justifiquen sus decisiones y el uso de los recursos públicos","La eliminación de los controles internos","La opacidad en la gestión presupuestaria","La ausencia de evaluación de políticas públicas"],0],
+[14,"La participación ciudadana en los asuntos públicos puede canalizarse, entre otras vías, mediante:",["Procesos de consulta y audiencia pública","La eliminación del derecho de petición","La prohibición de asociarse","La censura previa"],0],
+[14,"El órgano de garantía en materia de transparencia y buen gobierno tiene como función:",["Velar por el cumplimiento de las obligaciones de publicidad y el derecho de acceso a la información","Gestionar directamente los presupuestos públicos","Nombrar a los altos cargos","Dictar sentencias judiciales"],0],
+
+[15,"El principio de anualidad presupuestaria implica que:",["El presupuesto se elabora y aprueba para cada ejercicio económico anual","El presupuesto tiene vigencia de cuatro años","No existe límite temporal para el gasto","Los créditos se renuevan automáticamente cada mes"],0],
+[15,"Un crédito ampliable es aquel que:",["Puede incrementarse por encima de la consignación inicial en los supuestos y condiciones previstos legalmente","Nunca puede modificarse","Se reduce automáticamente al final del ejercicio","Solo aplica a los ingresos"],0],
+[15,"La fiscalización previa del gasto por parte de la función interventora tiene por objeto:",["Comprobar la legalidad de los actos que puedan dar lugar al reconocimiento de derechos u obligaciones","Aprobar el gasto directamente","Sustituir a la ordenación del pago","Fijar el importe del presupuesto"],0],
+
+[16,"Los ingresos de capital proceden principalmente de:",["La enajenación de inversiones reales o la recepción de transferencias de capital","El cobro de impuestos ordinarios","Las tasas por servicios","Las multas de tráfico en exclusiva"],0],
+[16,"La recaudación en periodo voluntario hace referencia a:",["El plazo en que el obligado al pago puede satisfacer su deuda sin recargos","El cobro forzoso mediante embargo","La condonación de la deuda","Un tipo de subvención"],0],
+[16,"El presupuesto de ingresos tiene, a diferencia del de gastos, carácter:",["Estimativo, no limitativo","Limitativo y vinculante en todo caso","Idéntico en su naturaleza jurídica al de gastos","Discrecional sin previsión alguna"],0],
+
+[17,"La oferta de empleo público debe contener, entre otros datos:",["El número y características de las plazas convocadas","El listado de personal cesante","El presupuesto total de la administración","El organigrama completo de la entidad"],0],
+[17,"Un puesto de trabajo de \"libre designación\" se caracteriza por:",["Proveerse mediante la apreciación discrecional del órgano competente, con convocatoria pública y valoración de mérito y capacidad","Adjudicarse siempre por sorteo","Ser exclusivo del personal laboral","No requerir convocatoria alguna"],0],
+[17,"La estructura de la RPT diferencia habitualmente entre puestos:",["De carácter singularizado y de carácter genérico","Únicamente permanentes","Únicamente temporales","Exclusivamente directivos"],0],
+
+[18,"Las bolsas de trabajo tienen como finalidad:",["Cubrir necesidades temporales de personal a partir de listas ordenadas de personas aspirantes","Sustituir a la oposición ordinaria","Eliminar los procesos selectivos","Nombrar personal eventual en exclusiva"],0],
+[18,"La situación de suspensión de funciones puede tener, entre otras, naturaleza:",["Disciplinaria o preventiva","Exclusivamente voluntaria","Exclusivamente honorífica","Exclusivamente económica"],0],
+[18,"La superación del proceso selectivo y, en su caso, del periodo de prácticas dan lugar, con carácter general, al nombramiento como:",["Personal funcionario de carrera","Personal eventual","Personal directivo automáticamente","Alto cargo"],0],
+
+[19,"El cuadro de clasificación documental es una herramienta que:",["Organiza jerárquicamente las series documentales de una institución","Sustituye al registro de entrada","Elimina la necesidad de archivo","Solo se aplica a documentos históricos"],0],
+[19,"El calendario de conservación y eliminación establece:",["Los plazos de conservación de cada serie documental y su destino final","El horario de apertura del archivo","El presupuesto anual del archivo","El número de empleados del archivo"],0],
+[19,"Un documento esencial o vital para una organización es aquel:",["Imprescindible para su funcionamiento y cuya pérdida causaría graves perjuicios","De menor interés que puede eliminarse sin control","Meramente informativo","De uso exclusivamente privado"],0],
+
+[20,"El número de registro que se asigna a un documento debe permitir, entre otros datos:",["Identificarlo de forma unívoca dentro del sistema","Calcular automáticamente su resolución","Sustituir a la firma electrónica","Determinar el sueldo del solicitante"],0],
+[20,"La plataforma de intermediación de datos permite:",["Que las administraciones consulten datos de la ciudadanía obrantes en otras administraciones sin exigir su aportación","Que cualquier ciudadano acceda a datos de terceros libremente","Eliminar el registro electrónico","Sustituir a la sede electrónica"],0],
+[20,"El registro electrónico general de una Administración debe ser:",["Interoperable con los registros de otras administraciones","Independiente y sin conexión con otros registros","De acceso exclusivo para el personal directivo","Únicamente presencial"],0],
+
+[21,"La foliación de un expediente administrativo consiste en:",["Numerar correlativamente los documentos que lo integran","Traducir el expediente a otro idioma","Eliminar documentos duplicados","Firmar electrónicamente cada página"],0],
+[21,"Un índice electrónico del expediente sirve para:",["Garantizar la integridad y facilitar la consulta del conjunto de documentos que lo componen","Sustituir a la resolución final","Eliminar la necesidad de foliación","Certificar la firma del interesado"],0],
+[21,"La copia auténtica de un documento administrativo es aquella:",["Expedida por el órgano competente con las garantías necesarias para tener la misma validez que el original","Realizada por cualquier persona sin control","Que carece de valor probatorio","Que solo puede emitirse en papel"],0],
+
+[22,"El prestador de servicios de confianza cualificado es la entidad que:",["Emite certificados electrónicos cualificados conforme a la normativa aplicable","Gestiona exclusivamente el registro civil","Tramita recursos administrativos","Sustituye a la Administración en la resolución de expedientes"],0],
+[22,"El sello electrónico se diferencia de la firma electrónica en que:",["Identifica a una persona jurídica u órgano administrativo, no a una persona física","Solo puede usarlo una persona física","No tiene ningún valor jurídico","Sustituye siempre al DNI"],0],
+[22,"El código seguro de verificación (CSV) permite:",["Comprobar la autenticidad de una copia de un documento electrónico a través de la sede electrónica","Sustituir a la firma manuscrita en papel","Identificar al ciudadano sin certificado","Eliminar el archivo electrónico"],0],
+
+[23,"El derecho a comunicarse con las Administraciones Públicas a través de un Punto de Acceso General electrónico está reconocido:",["A la ciudadanía","Únicamente a las empresas","Únicamente a los funcionarios","Únicamente a los abogados"],0],
+[23,"El derecho a conocer el estado de tramitación de los procedimientos en los que se es persona interesada corresponde:",["A la ciudadanía","Solo al personal que tramita el expediente","Solo a los representantes legales","A nadie, pues es información reservada"],0],
+[23,"El derecho a utilizar las lenguas oficiales en el territorio de la Comunidad Autónoma se ejerce:",["De acuerdo con lo previsto en el ordenamiento jurídico","De forma absolutamente discrecional para la Administración","Solo en procedimientos judiciales","Nunca en procedimientos administrativos"],0],
+
+[24,"Los servicios de información y atención a la ciudadanía (SAC/OAC) tienen como función principal:",["Orientar y facilitar información sobre trámites y servicios públicos","Resolver directamente todos los procedimientos","Sustituir a los órganos competentes","Imponer sanciones administrativas"],0],
+[24,"La accesibilidad universal en la atención a la ciudadanía implica:",["Que los entornos, productos y servicios sean comprensibles y utilizables por todas las personas","Que solo se atienda de forma presencial","Que se elimine la atención telefónica","Que sea opcional para la Administración"],0],
+[24,"Una carta de servicios es un documento que:",["Informa a la ciudadanía sobre los servicios que presta una organización y los compromisos de calidad asumidos","Sustituye al reglamento interno","Tiene naturaleza sancionadora","Es de uso exclusivamente interno"],0],
+
+[25,"Un oficio es un documento de comunicación:",["Entre órganos o unidades administrativas, o entre estos y particulares","Exclusivo entre particulares","Exclusivo para notificar sentencias","Que sustituye a la instancia"],0],
+[25,"La estructura habitual de un documento administrativo incluye:",["Encabezamiento, cuerpo o exposición y pie o cierre","Solo un título","Solo una firma","Solo una fecha"],0],
+[25,"El principio de concisión en la redacción administrativa implica:",["Expresar las ideas con el menor número de palabras posible sin perder claridad","Alargar el texto para parecer más formal","Repetir la información varias veces","Evitar los signos de puntuación"],0],
+
+[26,"La empatía en la atención a la ciudadanía consiste en:",["Ponerse en el lugar de la persona usuaria para comprender su situación","Imponer siempre el criterio del funcionario","Evitar cualquier muestra de interés","Acelerar la atención sin escuchar"],0],
+[26,"Ante una persona usuaria alterada o enfadada, una buena práctica de atención es:",["Mantener la calma y un tono de voz sereno","Responder con el mismo tono elevado","Ignorar sus quejas","Finalizar la conversación de inmediato"],0],
+[26,"La retroalimentación (feedback) en la comunicación oral sirve para:",["Confirmar que el mensaje se ha comprendido correctamente","Alargar innecesariamente la conversación","Sustituir a la comunicación escrita","Evitar preguntas de la persona usuaria"],0],
+
+[27,"La Clasificación Decimal Universal (CDU) es un sistema utilizado en bibliotecas para:",["Organizar los fondos bibliográficos por materias","Catalogar exclusivamente revistas","Gestionar el préstamo interbibliotecario","Fijar el horario de apertura"],0],
+[27,"El depósito legal tiene como finalidad:",["Garantizar la conservación de un ejemplar de cada publicación editada","Regular el préstamo de libros","Fijar el precio de los libros","Sustituir al catálogo bibliográfico"],0],
+[27,"Una hemeroteca es un centro especializado en la conservación de:",["Publicaciones periódicas como periódicos y revistas","Libros en exclusiva","Documentos administrativos internos","Material audiovisual en exclusiva"],0],
+
+[28,"La costumbre como fuente del derecho administrativo tiene un papel:",["Subsidiario, aplicándose en defecto de ley aplicable y siempre que no sea contraria a la moral o al orden público","Principal y prioritario sobre la ley","Nulo, pues no se reconoce como fuente","Superior al reglamento"],0],
+[28,"Los principios generales del derecho se aplican:",["En defecto de ley o costumbre, sin perjuicio de su carácter informador del ordenamiento jurídico","Nunca, pues carecen de valor normativo","Siempre con preferencia sobre la ley","Solo en el ámbito penal"],0],
+[28,"La derogación de una norma implica:",["La pérdida de vigencia de dicha norma por otra posterior","Su anulación con efectos retroactivos totales","Su suspensión temporal en exclusiva","Su modificación parcial automática"],0],
+[28,"La costumbre contraria a una ley (costumbre \"contra legem\"):",["No es admisible como fuente del derecho","Prevalece siempre sobre la ley","Deroga automáticamente la ley","Tiene rango constitucional"],0],
+
+[29,"La competencia administrativa es:",["Irrenunciable y se ejerce por los órganos que la tengan atribuida como propia, salvo delegación o avocación","Libremente transferible entre cualquier órgano","Siempre delegable sin límite","Inexistente en la organización administrativa"],0],
+[29,"Los órganos administrativos se clasifican, entre otros criterios, en:",["Simples y colegiados","Únicamente centrales","Únicamente periféricos","Únicamente consultivos"],0],
+[29,"La creación de un órgano administrativo requiere, entre otros requisitos:",["La determinación de su forma de integración y dependencia y la delimitación de sus funciones y competencias","La aprobación de una ley orgánica en todo caso","El visto bueno previo del Tribunal Constitucional","Ningún requisito formal"],0],
+[29,"La jerarquía administrativa implica que:",["Los órganos superiores pueden dirigir e inspeccionar la actuación de los inferiores","Todos los órganos tienen el mismo rango","Los órganos inferiores mandan sobre los superiores","No existe relación alguna entre órganos"],0],
+
+[30,"Los elementos del acto administrativo incluyen, entre otros:",["El sujeto, el objeto, la causa y la forma","Únicamente la firma","Únicamente el destinatario","Únicamente la fecha"],0],
+[30,"La presunción de validez de los actos administrativos implica que:",["Se presumen válidos y producen efectos desde la fecha en que se dicten, salvo que se disponga otra cosa","Deben ser confirmados judicialmente antes de producir efectos","Carecen de efectos hasta su firmeza","Requieren siempre notificación previa a su validez"],0],
+[30,"La ejecutoriedad de los actos administrativos permite a la Administración:",["Ejecutar sus propios actos sin necesidad de acudir previamente a los tribunales, salvo excepciones legales","Requerir siempre autorización judicial previa","Suspender automáticamente su ejecución","Delegar su ejecución en el interesado"],0],
+[30,"Un acto administrativo tácito se produce, entre otros supuestos, por:",["El silencio administrativo con los efectos que la ley le atribuya","La firma manuscrita del interesado","La publicación en el boletín oficial en exclusiva","La notificación edictal únicamente"],0],
+
+[31,"La capacidad de obrar ante las Administraciones Públicas corresponde, con carácter general:",["A las personas físicas y jurídicas que ostenten capacidad de obrar conforme a las normas civiles, con las especialidades previstas","Únicamente a los mayores de edad sin excepción","Únicamente a las personas jurídicas","Únicamente a quienes tengan certificado digital"],0],
+[31,"La representación ante la Administración puede acreditarse, entre otros medios, mediante:",["Cualquier medio válido en Derecho que deje constancia fidedigna","Únicamente escritura pública notarial","Únicamente de forma verbal","Nunca puede acreditarse"],0],
+[31,"El idioma de los procedimientos tramitados por la Administración vasca se ajusta, con carácter general, a:",["El derecho de la persona interesada a elegir la lengua oficial en que desea ser atendida","El uso exclusivo del castellano","El uso exclusivo del euskera","El idioma que decida unilateralmente el funcionario"],0],
+[31,"El cómputo de plazos por días en el procedimiento administrativo se entiende, salvo que se indique otra cosa, referido a:",["Días hábiles","Días naturales siempre","Solo días laborables bancarios","Meses completos"],0],
+
+[32,"Los actos de instrucción se realizarán:",["De oficio por el órgano que tramite el procedimiento, sin perjuicio del derecho de las personas interesadas a proponer actuaciones","Únicamente a instancia de la persona interesada","Únicamente por orden judicial","Únicamente al final del procedimiento"],0],
+[32,"La caducidad del procedimiento iniciado de oficio susceptible de producir efectos desfavorables se produce, entre otros supuestos, por:",["La paralización del procedimiento por causa imputable a la Administración durante el plazo máximo establecido","La mera solicitud de la persona interesada","El cambio de titular del órgano competente","La ampliación de un plazo"],0],
+[32,"El desistimiento en un procedimiento administrativo supone que la persona interesada:",["Abandona su pretensión o solicitud concreta en dicho procedimiento","Renuncia definitivamente al derecho material subyacente","Es sancionada automáticamente","Pierde la posibilidad de iniciar cualquier otro procedimiento"],0],
+
+[33,"El plazo general para interponer el recurso de alzada es, con carácter general:",["Un mes desde la notificación del acto, si este es expreso","Diez días","Tres meses","Un año"],0],
+[33,"La resolución de un recurso administrativo puede:",["Estimar o desestimar las pretensiones del recurso, o inadmitirlo en los supuestos previstos legalmente","Únicamente estimar el recurso","Únicamente desestimarlo","Carecer de efectos jurídicos"],0],
+[33,"La suspensión de la ejecución del acto recurrido puede acordarse, entre otros supuestos, cuando:",["Su ejecución pudiera causar perjuicios de imposible o difícil reparación","Lo solicite cualquier tercero sin motivo","El recurso se presente fuera de plazo","El acto ya haya sido ejecutado completamente"],0],
+[33,"La declaración de lesividad de un acto administrativo favorable es el paso previo necesario para:",["Que la propia Administración pueda impugnarlo ante la jurisdicción contencioso-administrativa","Anularlo directamente sin control judicial","Revocarlo libremente en cualquier momento","Delegarlo en otro órgano"],0],
+
+[34,"Para que exista responsabilidad patrimonial de la Administración, el daño alegado debe ser, entre otros requisitos:",["Antijurídico, en el sentido de que la persona no tenga el deber jurídico de soportarlo","Siempre doloso","Inevitable en cualquier circunstancia","Declarado previamente nulo por un tribunal"],0],
+[34,"La reclamación de responsabilidad patrimonial se dirige, con carácter general:",["A la Administración a cuyo servicio se encontraba el personal o el servicio causante del daño","Directamente a un tribunal penal","Al Defensor del Pueblo","A una compañía aseguradora privada en exclusiva"],0],
+[34,"El nexo causal en la responsabilidad patrimonial exige:",["Que exista una relación directa entre el funcionamiento del servicio público y el daño producido","Que el daño sea siempre económico","Que el daño sea previsible por el ciudadano","Que exista una sentencia penal previa"],0],
+
+[1,"La titularidad de la soberanía nacional reside, según el art. 1.2 CE, en:",["El pueblo español","El Rey","Las Cortes Generales","El Gobierno"],0],
+[1,"El Título Preliminar de la Constitución regula, entre otros aspectos:",["Los valores superiores del ordenamiento y la organización territorial básica del Estado","El procedimiento legislativo","El régimen de la Corona","El Poder Judicial"],0],
+[1,"Los principios rectores de la política social y económica se recogen en:",["El Capítulo III del Título I","El Capítulo II del Título I","El Título VIII","El Título X"],0],
+[1,"La Constitución configura a España como un Estado:",["Social y democrático de Derecho","Confesional","Federal","Unitario centralista"],0],
+[1,"El recurso de inconstitucionalidad puede interponerse, entre otros legitimados, por:",["Cincuenta diputados o cincuenta senadores","Cualquier ciudadano individualmente","Los ayuntamientos","Los sindicatos"],0],
+
+[2,"El principio de solidaridad entre Comunidades Autónomas se recoge en:",["El artículo 2 CE","El artículo 14 CE","El artículo 24 CE","El artículo 103 CE"],0],
+[2,"Las competencias exclusivas del Estado se enumeran principalmente en:",["El artículo 149.1 CE","El artículo 148.1 CE","El artículo 150 CE","El artículo 137 CE"],0],
+[2,"Las Comunidades Autónomas pueden agruparse en función de su vía de acceso a la autonomía, distinguiendo entre:",["Comunidades del art. 151 y del art. 143 CE","Comunidades forales y no forales exclusivamente","Comunidades históricas y modernas","Comunidades insulares y peninsulares"],0],
+[2,"Las Diputaciones Provinciales, con carácter general, gestionan:",["Los intereses propios de la provincia y la cooperación municipal","Exclusivamente la política exterior","Exclusivamente la defensa nacional","Exclusivamente la Seguridad Social"],0],
+[2,"La delegación de competencias del Estado a las CCAA mediante ley orgánica se contempla en:",["El artículo 150.2 CE","El artículo 1 CE","El artículo 9 CE","El artículo 96 CE"],0],
+[2,"El control de la actividad de los órganos de las CCAA corresponde, entre otros, a:",["El Tribunal Constitucional en materia de constitucionalidad","Exclusivamente al Defensor del Pueblo","Exclusivamente a la Unión Europea","Exclusivamente al Senado"],0],
+
+[3,"El Derecho originario de la Unión Europea está compuesto principalmente por:",["Los Tratados constitutivos y sus modificaciones","Los reglamentos y directivas","Las sentencias del TJUE","Las recomendaciones y dictámenes"],0],
+[3,"Las recomendaciones y dictámenes de las instituciones de la UE se caracterizan por:",["Carecer de fuerza vinculante","Ser directamente aplicables","Necesitar transposición obligatoria","Tener rango superior a los tratados"],0],
+[3,"El procedimiento legislativo ordinario de la UE implica:",["La codecisión entre el Parlamento Europeo y el Consejo a propuesta de la Comisión","La decisión exclusiva del Consejo Europeo","La aprobación exclusiva por referéndum en cada Estado","La decisión exclusiva del Tribunal de Justicia"],0],
+[3,"El Defensor del Pueblo Europeo tiene como función:",["Investigar casos de mala administración en las instituciones de la UE","Legislar en materia de consumo","Representar a los Estados miembros","Gestionar el presupuesto comunitario"],0],
+[3,"La ciudadanía de la Unión Europea otorga, entre otros derechos:",["El derecho a la libre circulación y residencia en el territorio de los Estados miembros","La exención total de impuestos","El derecho a un segundo pasaporte obligatorio","La sustitución de la nacionalidad de origen"],0],
+[3,"El Banco Central Europeo tiene como objetivo principal:",["Mantener la estabilidad de precios en la zona euro","Aprobar los presupuestos nacionales","Legislar en materia social","Sustituir a los bancos centrales nacionales en toda función"],0],
+
+[4,"Las leyes del Parlamento Vasco se publican, para su entrada en vigor, en:",["El Boletín Oficial del País Vasco","El Boletín Oficial del Estado exclusivamente","El Diario Oficial de la Unión Europea","El Boletín de cada Diputación Foral"],0],
+[4,"La disolución anticipada del Parlamento Vasco puede ser acordada por:",["El Lehendakari, bajo su exclusiva responsabilidad","Las Juntas Generales","El Tribunal Constitucional","El Gobierno del Estado"],0],
+[4,"Los Departamentos del Gobierno Vasco están dirigidos por:",["Las personas titulares de las Consejerías","El Parlamento en pleno","Las Diputaciones Forales","El Tribunal Superior de Justicia del País Vasco"],0],
+[4,"La iniciativa legislativa en el ámbito de la CAE corresponde, entre otros, a:",["El Gobierno Vasco y las y los parlamentarios","Exclusivamente a la ciudadanía mediante referéndum","Exclusivamente a las Diputaciones Forales","Exclusivamente al Estado"],0],
+[4,"La sede del Gobierno Vasco se ubica en:",["Vitoria-Gasteiz","Bilbao","San Sebastián","Iruña"],0],
+[4,"El Lehendakari, tras su elección, es nombrado formalmente por:",["El Rey","El Parlamento Vasco por sí solo sin más trámite","El Gobierno del Estado","El Tribunal Constitucional"],0],
+
+[5,"La Comisión Arbitral es el órgano encargado de:",["Resolver los conflictos de competencia entre las Instituciones Comunes y los Territorios Históricos","Aprobar el presupuesto general de la CAE","Representar al País Vasco ante la UE","Legislar en materia tributaria"],0],
+[5,"Las Instituciones Comunes de la CAE son, entre otras:",["El Parlamento Vasco y el Gobierno Vasco","Exclusivamente las Diputaciones Forales","Exclusivamente los ayuntamientos","Exclusivamente el Tribunal Superior de Justicia"],0],
+[5,"Las competencias de las Instituciones Comunes en materia de armonización fiscal buscan:",["Garantizar una presión fiscal efectiva global equivalente entre Territorios","Suprimir cualquier autonomía tributaria foral","Centralizar toda la recaudación en el Estado","Eliminar el Concierto Económico"],0],
+[5,"Los Territorios Históricos ejercen competencias de ejecución, entre otras, en materia de:",["Carreteras y obras públicas de su titularidad","Política exterior","Defensa","Relaciones internacionales"],0],
+[5,"La Ley de Territorios Históricos regula, entre otros aspectos:",["Las relaciones entre las instituciones comunes y las forales","El régimen electoral europeo","El derecho penal","El derecho mercantil"],0],
+[5,"Las Juntas Generales aprueban, entre otras normas:",["Las Normas Forales","Las leyes ordinarias del Parlamento Vasco","Los reglamentos de la Unión Europea","Las leyes orgánicas estatales"],0],
+
+[6,"El principio de transversalidad de género implica:",["Incorporar la perspectiva de género en todas las políticas y en todas las fases de su elaboración","Aplicarse solo a las políticas de empleo","Limitarse a campañas de sensibilización puntuales","Excluir a los hombres de cualquier análisis"],0],
+[6,"Las estadísticas y estudios que realicen las administraciones públicas vascas deben, en la medida de lo posible:",["Incorporar la variable sexo y posibilitar el análisis desde la perspectiva de género","Excluir cualquier referencia al sexo de las personas","Limitarse a datos económicos","Ser confidenciales para la ciudadanía"],0],
+[6,"La conciliación de la vida personal, familiar y laboral es un principio que las administraciones deben:",["Facilitar mediante medidas y permisos adecuados","Ignorar por no ser competencia pública","Limitar exclusivamente a las mujeres","Excluir del ámbito de la función pública"],0],
+[6,"El uso de un lenguaje e imágenes no sexistas se extiende, entre otros ámbitos, a:",["La publicidad y comunicaciones institucionales","Exclusivamente a los libros de texto","Exclusivamente al ámbito privado","Ningún ámbito de la Administración"],0],
+[6,"Las unidades administrativas para la igualdad tienen, entre otras funciones:",["Impulsar, coordinar y colaborar en la aplicación transversal de la perspectiva de género","Sustituir a los sindicatos","Gestionar exclusivamente las nóminas","Aprobar el presupuesto general"],0],
+[6,"La violencia machista, según la normativa vasca, comprende, entre otras manifestaciones:",["La violencia física, psicológica y sexual contra las mujeres por el hecho de serlo","Exclusivamente la violencia física","Exclusivamente la violencia en el ámbito laboral","Exclusivamente la violencia entre desconocidos"],0],
+
+[7,"El registro de funcionarios habilitados permite:",["La identificación y firma de personas que no dispongan de medios electrónicos propios, con su consentimiento","Sustituir a cualquier ciudadano en sus derechos sin autorización","Eliminar la necesidad de identificación en trámites electrónicos","Gestionar exclusivamente los archivos históricos"],0],
+[7,"Las notificaciones electrónicas se entienden practicadas, con carácter general, en el momento en que:",["Se produce el acceso a su contenido o transcurre el plazo máximo establecido sin acceder a ellas","Se generan, con independencia de su recepción","Lo decide unilateralmente el interesado sin plazo alguno","Se publican en el tablón físico exclusivamente"],0],
+[7,"La comparecencia electrónica en la sede permite:",["Acceder a la información sobre el estado de tramitación de un procedimiento","Modificar unilateralmente el contenido del expediente","Sustituir a la notificación en todo caso sin excepción","Eliminar la necesidad de identificación electrónica"],0],
+[7,"Un sistema de interoperabilidad exige respetar, entre otros esquemas, el:",["Esquema Nacional de Interoperabilidad","Exclusivamente los estándares privados de cada empresa","Exclusivamente el formato PDF","Ningún estándar técnico común"],0],
+[7,"El Esquema Nacional de Seguridad tiene por objeto:",["Establecer los principios y requisitos para una adecuada protección de la información y los servicios electrónicos","Regular exclusivamente la firma manuscrita","Sustituir a la normativa de protección de datos","Gestionar exclusivamente los archivos históricos"],0],
+[7,"La copia auténtica electrónica de un documento en papel se obtiene, entre otros medios, mediante:",["Digitalización con las garantías que aseguren su identidad y contenido","Fotografía tomada con cualquier dispositivo sin control","Escaneado sin ningún tipo de sello o firma","Transcripción manual del contenido"],0],
+
+[8,"El Estatuto de Autonomía del País Vasco declara al euskera:",["Lengua propia del Pueblo Vasco, cooficial junto al castellano","Única lengua oficial","Lengua sin reconocimiento oficial","Lengua exclusivamente de uso privado"],0],
+[8,"El derecho a recibir la enseñanza en euskera se reconoce en el marco de:",["La normalización lingüística del sistema educativo vasco","La exclusión del castellano de la enseñanza","La ausencia de regulación específica","La libre elección sin ningún marco normativo"],0],
+[8,"La certificación de conocimientos de euskera para la función pública se articula, entre otros medios, mediante:",["Los títulos y certificaciones oficiales reconocidos, como el EGA o equivalentes","Exclusivamente una entrevista informal","La titulación universitaria general","La antigüedad en el puesto"],0],
+[8,"El HABE es el organismo encargado de:",["La alfabetización y euskaldunización de personas adultas","La enseñanza universitaria en general","La gestión del padrón municipal","La regulación del comercio exterior"],0],
+[8,"Los planes de uso del euskera en las administraciones vascas se orientan, entre otros criterios, a:",["Incrementar progresivamente el uso del euskera en el funcionamiento interno y externo","Eliminar el uso del castellano de forma inmediata","Limitarse a la rotulación de edificios","Excluir a la ciudadanía castellanohablante de cualquier atención"],0],
+[8,"La preceptividad diferida de un perfil lingüístico implica que:",["Su exigencia se pospone a una fecha determinada, no siendo inmediata","Nunca llegará a ser exigible","Se aplica solo a cargos políticos","Sustituye a la evaluación de mérito y capacidad"],0],
+
+[9,"El personal directivo profesional se caracteriza por:",["Desarrollar funciones directivas profesionales en las administraciones públicas, sujeto a evaluación","Carecer de cualquier régimen de responsabilidad","Ser designado exclusivamente por sorteo","Coincidir siempre con el personal eventual"],0],
+[9,"La jornada de trabajo del personal empleado público se fija, con carácter general:",["Mediante la normativa aplicable y los instrumentos de negociación colectiva","De forma exclusivamente individual por cada empleado","Sin ningún límite legal","Por decisión exclusiva del sindicato"],0],
+[9,"El permiso por asuntos particulares es un derecho del personal empleado público que permite:",["Disponer de determinados días al año sin necesidad de justificar motivo","Ausentarse de forma indefinida sin control alguno","Sustituir a las vacaciones anuales retribuidas","Eludir el régimen disciplinario"],0],
+[9,"La incompatibilidad del personal al servicio de las administraciones públicas busca, entre otros fines:",["Garantizar el cumplimiento estricto de sus funciones y la imparcialidad","Permitir el desempeño simultáneo de cualquier actividad privada","Eliminar la carrera profesional","Sustituir a la evaluación del desempeño"],0],
+[9,"El régimen de Seguridad Social del personal funcionario puede integrarse, según los casos, en:",["El Régimen General o en regímenes especiales de clases pasivas, según la normativa aplicable","Ningún régimen de protección social","Un sistema exclusivamente privado","Un sistema idéntico en todas las administraciones sin distinción"],0],
+
+[10,"El principio de limitación de la finalidad implica que los datos se recojan:",["Con fines determinados, explícitos y legítimos","Sin ninguna finalidad concreta","Para cualquier uso futuro no especificado","Exclusivamente con fines comerciales"],0],
+[10,"El derecho de oposición permite a la persona interesada:",["Oponerse al tratamiento de sus datos personales en determinados supuestos","Impedir cualquier tratamiento de datos de terceros","Modificar los datos de otras personas","Exigir la eliminación de archivos históricos sin excepción"],0],
+[10,"El Registro de Actividades de Tratamiento tiene como finalidad:",["Documentar los tratamientos de datos realizados por el responsable","Sustituir a la autoridad de control","Eliminar la necesidad de bases de legitimación","Publicar datos personales de la ciudadanía"],0],
+[10,"La evaluación de impacto relativa a la protección de datos se exige, entre otros supuestos, cuando:",["El tratamiento entrañe un alto riesgo para los derechos y libertades de las personas","Cualquier tratamiento, sin excepción, por mínimo que sea","Nunca es exigible en el sector público","Lo decide discrecionalmente el interesado"],0],
+[10,"La autoridad de control en materia de protección de datos actúa como:",["Órgano supervisor con potestad de investigación y sanción en su ámbito competencial","Órgano exclusivamente consultivo sin potestad sancionadora","Sustituto del responsable del tratamiento","Órgano jurisdiccional penal"],0],
+[10,"El plazo de conservación de los datos personales debe ser:",["El necesario para cumplir la finalidad del tratamiento, salvo obligación legal de conservación","Indefinido en todo caso","De un día en todos los supuestos","Determinado exclusivamente por el interesado sin límite alguno"],0],
+
+[11,"El derecho de consulta y participación del personal trabajador en materia preventiva se articula, entre otros medios, a través de:",["Los Delegados de Prevención y el Comité de Seguridad y Salud","La Inspección de Trabajo exclusivamente","Los tribunales de justicia","El Ministerio Fiscal"],0],
+[11,"La coordinación de actividades empresariales en materia preventiva es necesaria cuando:",["Concurren trabajadores de varias empresas en un mismo centro de trabajo","Solo trabaja una empresa en el centro","Se trate de un edificio administrativo vacío","Nunca es necesaria en el sector público"],0],
+[11,"Los equipos de protección individual (EPI) deben utilizarse:",["Cuando los riesgos no puedan evitarse o limitarse suficientemente por otros medios","Siempre, en sustitución de cualquier medida colectiva","Nunca en el ámbito administrativo","Solo por decisión voluntaria del trabajador"],0],
+[11,"La política de prevención de riesgos laborales debe integrarse en:",["El conjunto de actividades y decisiones de la organización","Exclusivamente el departamento de recursos humanos","Exclusivamente el ámbito sindical","Ningún nivel de decisión organizativa"],0],
+[11,"El accidente de trabajo se define, a estos efectos, como:",["La lesión corporal sufrida con ocasión o por consecuencia del trabajo","Cualquier enfermedad común no relacionada con el trabajo","Un hecho exclusivamente doméstico","Una situación no indemnizable en ningún caso"],0],
+[11,"La investigación de accidentes de trabajo tiene como finalidad principal:",["Identificar las causas para adoptar medidas que eviten su repetición","Sancionar automáticamente al trabajador accidentado","Evitar cualquier notificación a la autoridad laboral","Sustituir a la evaluación de riesgos"],0],
+
+[12,"La normativa de pantallas de visualización de datos se aplica a los puestos en que se utilice:",["Un equipo con pantalla de forma habitual y durante una parte relevante del trabajo","Cualquier dispositivo electrónico de forma ocasional","Exclusivamente ordenadores portátiles","Exclusivamente equipos sin teclado"],0],
+[12,"El reconocimiento médico específico para personal usuario de PVD debe realizarse, entre otros momentos:",["Antes de comenzar a trabajar con la pantalla y de forma periódica posterior","Solo si el trabajador lo solicita expresamente por escrito","Nunca, salvo tras un accidente","Exclusivamente al finalizar la relación laboral"],0],
+[12,"El mobiliario de un puesto con PVD debe permitir, entre otros aspectos:",["La regulación de altura de la silla y el reposapiés cuando sea necesario","Una postura fija sin posibilidad de ajuste","El uso exclusivo de sillas sin respaldo","Prescindir de cualquier soporte para el monitor"],0],
+[12,"La fatiga visual asociada al trabajo con PVD puede prevenirse, entre otras medidas, mediante:",["Pausas visuales y una iluminación adecuada del entorno","El aumento continuo del brillo de la pantalla","La eliminación de cualquier descanso","El uso ininterrumpido sin parpadeo"],0],
+[12,"El teletrabajo con PVD exige aplicar, en lo posible:",["Los mismos principios ergonómicos que en el puesto presencial","Ningún criterio de prevención de riesgos","Exclusivamente normas de seguridad vial","Criterios distintos a los del puesto en oficina sin relación alguna"],0],
+
+[13,"Ante la sospecha de fractura, se recomienda, entre otras medidas:",["Inmovilizar la zona afectada sin intentar recolocar el hueso","Forzar el movimiento para comprobar el alcance de la lesión","Aplicar calor intenso sobre la zona","Descartar la necesidad de asistencia sanitaria"],0],
+[13,"La cadena de supervivencia ante una parada cardiorrespiratoria incluye, entre otros eslabones:",["La alerta precoz y el inicio inmediato de la reanimación cardiopulmonar","Esperar a que la persona reaccione por sí sola","Evitar llamar a los servicios de emergencia","Posponer cualquier actuación hasta la llegada de un médico"],0],
+[13,"El uso de un desfibrilador externo automático (DEA) está indicado en casos de:",["Parada cardiorrespiratoria con ritmo desfibrilable","Cualquier mareo leve","Dolor muscular","Fiebre alta sin otros síntomas"],0],
+[13,"Ante una intoxicación, es recomendable, entre otras pautas:",["Contactar con el servicio de información toxicológica y no provocar el vómito salvo indicación expresa","Provocar el vómito de forma sistemática","Dar de beber leche en cualquier caso sin indicación","Esperar sin ninguna actuación"],0],
+[13,"Los signos de shock incluyen, entre otros:",["Palidez, sudoración fría y pulso rápido y débil","Fiebre alta exclusivamente","Aumento del apetito","Mejora repentina del estado general"],0],
+[13,"Ante un esguince, se recomienda inicialmente, entre otras pautas:",["Reposo, hielo, compresión y elevación de la zona afectada","Movilización forzada inmediata","Aplicación de calor intenso","Masaje profundo sobre la zona lesionada"],0],
+
+[14,"El gobierno abierto promueve, entre otros mecanismos, la participación ciudadana mediante:",["Consultas públicas y procesos de participación en la elaboración normativa","La exclusión de la ciudadanía de cualquier proceso","La centralización absoluta de la toma de decisiones","La eliminación de cualquier canal de comunicación"],0],
+[14,"Los datos abiertos (open data) se caracterizan por:",["Estar disponibles en formatos reutilizables y accesibles para cualquier persona","Ser exclusivamente de uso interno de la Administración","Requerir siempre pago para su consulta","Estar sujetos a derechos de autor restrictivos"],0],
+[14,"El buen gobierno exige, entre otros principios, actuar con:",["Imparcialidad y ausencia de conflictos de interés","Favoritismo hacia determinados colectivos","Opacidad en la toma de decisiones","Discrecionalidad sin ningún control"],0],
+[14,"Las administraciones públicas deben publicar de forma activa, entre otra información:",["La relativa a su organización, funciones y normativa aplicable","Los datos personales de la ciudadanía sin limitación","Información exclusivamente de carácter electoral","Ninguna información sin solicitud previa"],0],
+[14,"El silencio ante una solicitud de acceso a la información pública, transcurrido el plazo legal, se entiende, con carácter general:",["Desestimatorio, salvo que la normativa disponga otra cosa","Siempre estimatorio sin excepción","Irrelevante jurídicamente","Causa de nulidad del procedimiento"],0],
+[14,"La colaboración ciudadana en el gobierno abierto puede canalizarse, entre otras vías, mediante:",["Plataformas de participación y consulta pública","La sustitución de los órganos representativos","La eliminación del derecho de petición","La prohibición de cualquier consulta"],0],
+
+[15,"El principio de especialidad presupuestaria implica que los créditos se destinan:",["A la finalidad específica para la que fueron aprobados","A cualquier finalidad que decida el gestor del gasto","Exclusivamente a inversiones","Sin ningún límite ni control"],0],
+[15,"La fiscalización previa del gasto público tiene como finalidad:",["Comprobar la legalidad de los actos que dan lugar al reconocimiento de derechos y obligaciones económicas","Sustituir a la aprobación del presupuesto","Aumentar el gasto sin control","Eliminar la necesidad de autorización"],0],
+[15,"Un anticipo de caja fija se utiliza para:",["Atender gastos periódicos o de menor cuantía de carácter repetitivo","Financiar inversiones de gran envergadura","Sustituir a la nómina del personal","Eliminar la necesidad de justificación en cualquier caso"],0],
+[15,"La generación de crédito es una modificación presupuestaria vinculada, entre otros supuestos, a:",["La existencia de ingresos no previstos inicialmente afectados a un fin concreto","La reducción del gasto público en cualquier caso","La eliminación de un crédito existente","La aprobación de una nueva ley orgánica"],0],
+[15,"El remanente de tesorería refleja:",["La diferencia entre los derechos pendientes de cobro y las obligaciones pendientes de pago más las disponibilidades líquidas","El importe total del presupuesto inicial","El gasto de personal exclusivamente","El saldo de la deuda pública a largo plazo"],0],
+[15,"La intervención delegada tiene como función:",["Ejercer el control interno del gasto en un ámbito o unidad concreta por delegación del órgano interventor","Sustituir a la Diputación Foral","Aprobar directamente el presupuesto general","Representar a la Administración ante los tribunales"],0],
+
+[16,"Los ingresos tributarios comprenden principalmente:",["Impuestos, tasas y contribuciones especiales","Exclusivamente préstamos y créditos","Exclusivamente subvenciones europeas","Exclusivamente multas administrativas"],0],
+[16,"Una contribución especial se caracteriza por:",["Gravar el beneficio o aumento de valor obtenido por la realización de obras u servicios públicos","Ser idéntica a una tasa","Carecer de cualquier contraprestación","Aplicarse exclusivamente a empresas privadas"],0],
+[16,"La previsión de ingresos en el presupuesto tiene, a diferencia de los créditos de gasto, carácter:",["Estimativo, no limitativo","Limitativo y vinculante en todo caso","Idéntico al de los créditos de gasto","Irrelevante para la ejecución presupuestaria"],0],
+[16,"El endeudamiento público debe, con carácter general:",["Ajustarse a los límites y autorizaciones legalmente establecidos","Carecer de cualquier límite legal","Depender exclusivamente de la decisión de cada departamento","Financiar exclusivamente gastos corrientes sin excepción"],0],
+[16,"Las transferencias corrientes recibidas por una Administración se destinan, con carácter general, a:",["Financiar gastos de funcionamiento ordinario","Financiar exclusivamente inversiones","Amortizar deuda pública exclusivamente","Sustituir a los ingresos tributarios en su totalidad"],0],
+[16,"La liquidación de un tributo consiste en:",["El acto por el que se determina la deuda tributaria conforme a la normativa aplicable","El pago efectivo de la deuda","La prescripción del derecho de cobro","La devolución de un ingreso indebido"],0],
+
+[17,"La relación de puestos de trabajo debe ser objeto de:",["Publicación, para su general conocimiento","Confidencialidad absoluta sin publicación alguna","Modificación diaria sin control","Aprobación exclusiva por cada empleado individualmente"],0],
+[17,"El complemento de destino retribuye, con carácter general:",["El nivel del puesto de trabajo que se desempeña","Exclusivamente la antigüedad","El número de hijos a cargo","El rendimiento comercial obtenido"],0],
+[17,"La estructura de retribuciones del personal funcionario se compone, entre otros conceptos, de:",["Retribuciones básicas y complementarias","Exclusivamente comisiones variables","Exclusivamente dietas de viaje","Exclusivamente pagos en especie"],0],
+[17,"Los Cuerpos de la Administración se agrupan habitualmente en grupos o subgrupos según:",["La titulación exigida para el ingreso","El lugar de nacimiento","La antigüedad exclusivamente","El número de hijos"],0],
+[17,"La escala es una subdivisión de:",["Un Cuerpo, en función de la especialización funcional","Un municipio","Un departamento presupuestario","Un archivo documental"],0],
+[17,"La adscripción de un puesto de trabajo a un determinado Cuerpo o Escala se recoge en:",["La Relación de Puestos de Trabajo","El convenio colectivo exclusivamente","La Constitución","El Boletín Oficial de la Unión Europea"],0],
+
+[18,"El principio de publicidad en los procesos selectivos exige:",["La difusión de las convocatorias en los boletines oficiales correspondientes","Mantener en secreto las bases hasta el examen","Limitar la información a los candidatos ya inscritos","Excluir cualquier publicación oficial"],0],
+[18,"Un tribunal calificador de un proceso selectivo debe actuar conforme a los principios de:",["Independencia, imparcialidad y profesionalidad","Subordinación política directa","Discrecionalidad sin ningún control","Sorteo puro entre sus miembros"],0],
+[18,"La reserva de plazas para personas con discapacidad en las ofertas de empleo público tiene como finalidad:",["Garantizar su participación efectiva en el acceso al empleo público","Excluir a este colectivo de los procesos ordinarios","Sustituir a la evaluación de mérito y capacidad","Reducir el número total de plazas convocadas"],0],
+[18,"La adaptación de tiempos y medios en pruebas selectivas para personas con discapacidad se concede:",["Previa solicitud y acreditación de la necesidad, dentro de lo razonable","De forma automática sin solicitud alguna","Nunca, por no estar previsto legalmente","Solo si lo decide el tribunal sin ningún criterio"],0],
+[18,"La renuncia a una plaza obtenida en un proceso selectivo implica, con carácter general:",["La pérdida del derecho a su nombramiento en las condiciones ordinarias","Ningún efecto jurídico","La readmisión automática al año siguiente","Una sanción penal"],0],
+[18,"La comisión de servicios es una forma de provisión temporal de puestos que permite:",["Cubrir un puesto vacante o con reserva de titular de forma provisional","El nombramiento definitivo sin concurso","La creación de un nuevo Cuerpo","La eliminación de la Relación de Puestos de Trabajo"],0],
+
+[19,"El principio de procedencia en archivística exige:",["Mantener unidos los documentos de un mismo origen sin mezclarlos con los de otra procedencia","Clasificar los documentos exclusivamente por fecha","Eliminar el origen del documento para su archivo","Agrupar documentos de distintos organismos sin distinción"],0],
+[19,"Un documento esencial es aquel:",["Imprescindible para el funcionamiento de la organización o la garantía de derechos, que requiere medidas especiales de conservación","De escaso valor administrativo","Destinado a eliminación inmediata","De uso exclusivamente decorativo"],0],
+[19,"La comisión de valoración documental decide, entre otras cuestiones:",["Los plazos de conservación y el destino final de las series documentales","El presupuesto anual del departamento","El organigrama de la institución","El calendario laboral del personal"],0],
+[19,"El inventario de un archivo permite:",["Conocer de forma global qué fondos y series documentales existen","Sustituir a la firma electrónica","Eliminar la necesidad de un cuadro de clasificación","Modificar el contenido de los expedientes"],0],
+[19,"La digitalización certificada de documentos en papel exige garantizar, entre otros aspectos:",["La fidelidad e integridad de la imagen respecto al original","La eliminación inmediata del papel en todo caso sin excepción","La ausencia de cualquier control de calidad","La modificación del contenido para mejorar su legibilidad"],0],
+[19,"El acceso a documentos históricos o de valor testimonial se rige, entre otros criterios, por:",["La normativa de archivos y patrimonio documental, compatibilizándola con la protección de datos","La libre disposición sin ningún límite","La prohibición absoluta de consulta","El criterio exclusivo del archivero sin normativa aplicable"],0],
+
+[20,"El Punto de Acceso General electrónico de una Administración tiene como función:",["Facilitar el acceso unificado a los servicios, trámites e información","Sustituir a cada sede electrónica departamental por completo","Eliminar la necesidad de identificación","Gestionar exclusivamente las nóminas del personal"],0],
+[20,"El cierre del registro correspondiente a un día natural, a efectos del cómputo de plazos, se produce:",["a las 23:59:59 horas de ese día, conforme a la hora oficial","a las 14:00 horas en todo caso","cuando lo decida el funcionario de turno","el registro electrónico no cierra nunca a estos efectos"],0],
+[20,"Un asiento de salida en el registro se practica, con carácter general:",["Antes de la remisión del documento a su destinatario","Después de que el destinatario lo reciba","Solo si el documento es en papel","Nunca en el ámbito electrónico"],0],
+[20,"La interconexión entre el registro electrónico y el archivo permite:",["La incorporación automatizada de los documentos registrados al expediente correspondiente","La eliminación automática de los documentos tras su registro","La sustitución del expediente por el asiento registral","La publicación automática en el Boletín Oficial"],0],
+[20,"Los formularios normalizados en el registro electrónico tienen como finalidad:",["Facilitar y estandarizar la presentación de solicitudes por la ciudadanía","Sustituir a la firma electrónica","Eliminar cualquier posibilidad de adjuntar documentos","Limitar el acceso a determinados colectivos"],0],
+[20,"La Administración debe garantizar la interoperabilidad, entre otros niveles, en el ámbito:",["Organizativo, semántico y técnico","Exclusivamente estético","Exclusivamente presupuestario","Exclusivamente lingüístico"],0],
+
+[21,"El documento administrativo debe permitir, entre otros requisitos, identificar:",["El órgano que lo produce, su fecha y su destinatario","Exclusivamente el color del papel utilizado","El coste económico de su elaboración","El número de folios en todo caso"],0],
+[21,"La minuta de un documento administrativo es:",["El borrador o copia previa a su versión definitiva","La versión oficial y firmada del documento","Un tipo de recurso administrativo","Un documento exclusivamente electrónico"],0],
+[21,"Los expedientes acumulados son aquellos que:",["Se tramitan conjuntamente por razón de conexión entre sí","Carecen de cualquier relación entre ellos","Se archivan sin ningún criterio","Corresponden a distintos procedimientos sin vinculación alguna"],0],
+[21,"La foliación electrónica de un expediente se realiza mediante:",["Un índice electrónico firmado que garantiza su integridad","La numeración manual a bolígrafo","La eliminación de cualquier control de integridad","La impresión en papel del expediente completo"],0],
+[21,"Un documento administrativo puede considerarse nulo cuando:",["Ha sido dictado por órgano manifiestamente incompetente","Contiene una errata ortográfica subsanable","Carece de una firma decorativa","Se ha emitido fuera del horario habitual de oficina"],0],
+[21,"La compulsa electrónica de un documento consiste en:",["El cotejo electrónico de una copia digitalizada con el documento original para garantizar su fidelidad","La impresión del documento en papel","La eliminación de la copia tras su uso","La traducción del documento a otro idioma"],0],
+
+[22,"La Apostilla de La Haya tiene como finalidad:",["Legalizar documentos públicos para su validez en otro país firmante del Convenio","Sustituir a la firma electrónica en el ámbito interno","Eliminar la necesidad de traducción jurada en cualquier caso","Certificar exclusivamente firmas notariales españolas"],0],
+[22,"El DNI electrónico permite, entre otras funciones:",["Acreditar electrónicamente la identidad de su titular y firmar documentos electrónicos","Sustituir al pasaporte en cualquier país sin excepción","Eliminar la necesidad de cualquier otro certificado electrónico","Ser utilizado exclusivamente por personal funcionario"],0],
+[22,"La caducidad de un certificado electrónico implica que:",["Deja de ser válido para acreditar la identidad o firmar electrónicamente","El documento firmado con él pierde automáticamente toda validez retroactiva","El titular pierde su identidad legal","Se extingue la personalidad jurídica del titular"],0],
+[22,"El sellado de tiempo (time-stamping) permite:",["Acreditar que un documento electrónico existía en un momento determinado","Sustituir a la identificación del firmante","Eliminar la necesidad de archivo electrónico","Modificar la fecha de un documento ya firmado"],0],
+[22,"La revocación de un certificado electrónico puede producirse, entre otros supuestos, por:",["Pérdida o compromiso de la clave privada asociada","El simple transcurso de una semana desde su emisión","La voluntad de un tercero sin relación con el titular","La finalización de un trámite administrativo concreto"],0],
+
+[23,"El derecho a ser asistida en el uso de medios electrónicos en las relaciones con la Administración corresponde:",["A la ciudadanía, especialmente a quienes tengan dificultades de acceso a dichos medios","Exclusivamente a las empresas","Exclusivamente al personal funcionario","A nadie, pues no está reconocido"],0],
+[23,"El derecho a exigir responsabilidades a las Administraciones Públicas cuando corresponda se enmarca en:",["El derecho a una buena administración y el principio de responsabilidad patrimonial","La ausencia de cualquier mecanismo de reclamación","El derecho penal exclusivamente","La legislación mercantil"],0],
+[23,"El derecho a utilizar las lenguas oficiales en el territorio de la Comunidad Autónoma se reconoce, entre otros ámbitos, en:",["Las relaciones con las administraciones públicas vascas","Exclusivamente en el ámbito privado","Exclusivamente en el ámbito educativo universitario","Ningún ámbito administrativo"],0],
+[23,"El derecho a formular quejas y sugerencias sobre el funcionamiento de los servicios públicos corresponde:",["A la ciudadanía en sus relaciones con la Administración","Exclusivamente al personal funcionario","Exclusivamente a las empresas proveedoras","A nadie, pues no existe cauce para ello"],0],
+[23,"El derecho a obtener copia sellada de los documentos que se presenten, aportando el original y la copia, corresponde:",["A la persona interesada que así lo solicite","Exclusivamente a los representantes legales","Exclusivamente a las administraciones entre sí","A nadie, por no estar previsto"],0],
+[23,"El principio de buena fe y confianza legítima en las relaciones de la ciudadanía con la Administración implica que:",["La actuación administrativa debe ser coherente y previsible, sin generar expectativas defraudadas injustificadamente","La Administración puede actuar arbitrariamente sin consecuencias","La ciudadanía carece de cualquier protección frente a cambios de criterio","Solo se aplica en el ámbito privado"],0],
+
+[24,"La ventanilla única tiene como finalidad:",["Facilitar a la ciudadanía y empresas la realización de trámites en un único punto de acceso","Obligar a tramitar todo exclusivamente de forma presencial","Eliminar cualquier posibilidad de tramitación telemática","Reducir el número de servicios públicos disponibles"],0],
+[24,"La atención a la diversidad funcional en la prestación de servicios públicos exige, entre otros aspectos:",["Adaptar los canales y formatos de comunicación a las necesidades de cada persona","Limitar la atención a un único canal para todas las personas","Excluir a este colectivo de determinados servicios","Reducir los plazos de resolución sin justificación"],0],
+[24,"Las oficinas de atención integral a la ciudadanía buscan:",["Ofrecer información y gestión de trámites de distintas administraciones en un mismo espacio","Centralizar exclusivamente los trámites tributarios","Sustituir a los registros electrónicos","Limitar el horario de atención al mínimo legal"],0],
+[24,"La calidad en la prestación de servicios públicos se mide, entre otros indicadores, mediante:",["Encuestas de satisfacción y tiempos de resolución","El número de sanciones impuestas","El volumen de recursos judiciales presentados","El número de funcionarios cesados"],0],
+[24,"La atención a la ciudadanía en situaciones de vulnerabilidad debe, entre otros aspectos:",["Adaptarse a sus circunstancias particulares, facilitando el acceso a los servicios","Aplicar el mismo procedimiento sin ninguna adaptación en todo caso","Excluir a estas personas de la atención ordinaria","Derivarlas siempre a organizaciones privadas sin intervención pública"],0],
+[24,"El derecho a una atención administrativa en un tiempo razonable forma parte, entre otros principios, de:",["El derecho a una buena administración","El derecho penal","El derecho mercantil","Ningún principio jurídicamente reconocido"],0],
+
+[25,"Un acta administrativa es un documento que:",["Recoge lo tratado y acordado en una reunión u órgano colegiado","Solicita algo a la Administración","Certifica un hecho concreto ajeno a reuniones","Notifica una resolución sancionadora"],0],
+[25,"La estructura habitual de una instancia incluye, entre otros elementos:",["Datos de la persona solicitante, exposición y solicitud","Exclusivamente la firma sin ningún otro contenido","El sello del órgano exclusivamente","Una fotografía del solicitante en todo caso"],0],
+[25,"Un anuncio administrativo se utiliza habitualmente para:",["Hacer pública una información dirigida a un número indeterminado de personas","Comunicarse exclusivamente entre departamentos internos","Sustituir a una notificación individual siempre que sea posible localizar al interesado","Certificar un hecho concreto"],0],
+[25,"El uso de siglas y abreviaturas en un documento administrativo debe:",["Explicarse la primera vez que se utilicen para garantizar la comprensión","Evitarse cualquier explicación por resultar redundante","Generalizarse sin ningún criterio","Sustituir siempre al término completo sin excepción"],0],
+[25,"La cortesía y el respeto en la comunicación escrita administrativa contribuyen a:",["Una relación de confianza entre la ciudadanía y la Administración","Dificultar la comprensión del documento","Alargar innecesariamente los textos","Sustituir el contenido jurídico del documento"],0],
+[25,"Un informe técnico administrativo debe caracterizarse, entre otros rasgos, por:",["La objetividad y el rigor en su contenido","La subjetividad y la opinión personal sin fundamento","La brevedad extrema sin justificación técnica","La ausencia de conclusiones"],0],
+
+[26,"La retroalimentación en la comunicación oral con la ciudadanía permite:",["Confirmar que el mensaje ha sido comprendido correctamente","Evitar cualquier intercambio de información","Sustituir a la comunicación escrita en todo trámite","Finalizar la conversación de forma abrupta"],0],
+[26,"El lenguaje paraverbal incluye, entre otros elementos:",["El tono, el volumen y el ritmo de la voz","Exclusivamente el contenido de las palabras","Exclusivamente los gestos faciales","Exclusivamente el vocabulario técnico empleado"],0],
+[26,"Ante una consulta que se desconoce responder, es recomendable:",["Informar de ello con honestidad y orientar sobre dónde obtener la respuesta","Inventar una respuesta para no quedar mal","Ignorar la pregunta","Derivar sistemáticamente sin ninguna orientación"],0],
+[26,"La proxémica en la atención presencial se refiere a:",["La distancia física adecuada entre las personas durante la interacción","El tono de voz utilizado","El contenido verbal del mensaje","La rapidez de la respuesta"],0],
+[26,"Un protocolo de atención telefónica homogéneo en una Administración busca, entre otros fines:",["Garantizar una atención de calidad uniforme a la ciudadanía","Limitar la creatividad del personal en cualquier caso","Reducir el número de llamadas atendidas","Sustituir a la atención presencial en todo caso"],0],
+[26,"La comunicación asertiva se caracteriza por:",["Expresar opiniones y necesidades de forma clara y respetuosa","Imponer siempre el propio criterio sin escuchar","Evitar cualquier expresión de desacuerdo","Adoptar una actitud pasiva ante cualquier situación"],0],
+
+[27,"El préstamo interbibliotecario permite:",["Obtener temporalmente fondos de otra biblioteca de la red cuando no están disponibles en la propia","Comprar libros a través de la biblioteca","Eliminar la necesidad de catalogación","Sustituir a la consulta en sala"],0],
+[27,"La conservación preventiva en una biblioteca busca:",["Evitar el deterioro de los fondos mediante condiciones ambientales y de manipulación adecuadas","Restaurar documentos ya deteriorados","Digitalizar todos los fondos sin excepción","Eliminar los fondos más antiguos"],0],
+[27,"Un servicio de referencia bibliotecaria consiste en:",["Orientar y ayudar a las personas usuarias en su búsqueda de información","Gestionar exclusivamente el préstamo de libros","Tramitar solicitudes administrativas ajenas a la biblioteca","Sustituir a los archivos administrativos"],0],
+[27,"La normalización bibliográfica facilita:",["El intercambio y la interoperabilidad de datos entre distintos catálogos","La eliminación de estándares comunes","La limitación del acceso a la información","La sustitución del personal bibliotecario"],0],
+[27,"El fondo local de una biblioteca pública recoge, entre otros materiales:",["Publicaciones relacionadas con el municipio o territorio de referencia","Exclusivamente publicaciones extranjeras","Exclusivamente prensa deportiva","Exclusivamente material audiovisual"],0],
+[27,"Las bibliotecas públicas contribuyen, entre otras funciones, a:",["El fomento de la lectura y el acceso a la cultura","La gestión tributaria municipal","La tramitación de licencias urbanísticas","El registro civil"],0],
+
+[28,"Los tratados internacionales, una vez publicados, ocupan en la jerarquía normativa una posición:",["Superior a las leyes internas, conforme a la Constitución","Inferior a cualquier reglamento","Idéntica a la de una simple circular","Irrelevante para el ordenamiento interno"],0],
+[28,"El decreto-ley es una norma con rango de ley dictada por:",["El Gobierno en casos de extraordinaria y urgente necesidad","El Parlamento en el procedimiento legislativo ordinario","Los tribunales de justicia","Cualquier órgano administrativo sin límite"],0],
+[28,"La derogación tácita de una norma se produce cuando:",["una norma posterior resulta incompatible con el contenido de la anterior, aunque no la derogue expresamente","se publica en un boletín oficial distinto al habitual","transcurre un año desde su entrada en vigor","lo declara un tribunal penal"],0],
+[28,"Un decreto legislativo habilita al Gobierno para:",["Dictar normas con rango de ley en las materias delegadas por las Cortes Generales","Modificar la Constitución","Sustituir al Poder Judicial","Legislar sin ningún límite ni control"],0],
+[28,"La disposición transitoria de una norma tiene como función:",["Regular el régimen aplicable durante el tránsito de la normativa anterior a la nueva","Modificar el título de la norma","Sustituir al preámbulo","Carecer de cualquier efecto jurídico"],0],
+[28,"La jurisprudencia, en el sistema español, complementa el ordenamiento jurídico mediante:",["La doctrina reiterada del Tribunal Supremo al interpretar y aplicar la ley","La creación directa de normas con rango de ley","La derogación de leyes vigentes","La sustitución del poder legislativo"],0],
+
+[29,"Los órganos superiores y directivos de una Administración se diferencian, entre otros aspectos, en que:",["Los superiores fijan los fines y objetivos, y los directivos los desarrollan y ejecutan","Son términos idénticos sin ninguna distinción","Los directivos tienen siempre mayor rango jerárquico","Los superiores carecen de cualquier función decisoria"],0],
+[29,"La sustitución de la persona titular de un órgano administrativo en caso de vacante, ausencia o enfermedad se realiza:",["Conforme a lo previsto en las normas de organización, o por quien designe el órgano competente","De forma discrecional por cualquier funcionario","Nunca, quedando el órgano inactivo","Por sorteo entre el personal"],0],
+[29,"La desconcentración administrativa consiste en:",["La transferencia de titularidad y ejercicio de una competencia a un órgano jerárquicamente dependiente","La creación de un ente independiente","La delegación temporal de una competencia","La avocación de un asunto por el órgano superior"],0],
+[29,"La descentralización, a diferencia de la desconcentración, implica:",["La transferencia de competencias a una persona jurídica distinta y con autonomía propia","La simple transferencia entre órganos de una misma persona jurídica","La eliminación de la competencia transferida","La avocación permanente del asunto"],0],
+[29,"Los actos de un órgano colegiado se reflejan, con carácter general, en:",["El acta de la sesión correspondiente","Un documento exclusivamente verbal","Ningún soporte documental","Una resolución individual de cada miembro"],0],
+[29,"La actuación por suplencia se diferencia de la delegación en que:",["La suplencia sustituye a la persona titular por circunstancias como ausencia, vacante o enfermedad, sin transferencia de competencia entre órganos distintos","Son conceptos jurídicos idénticos","La suplencia siempre requiere una norma con rango de ley","La delegación no requiere ninguna publicidad"],0],
+
+[30,"Los actos de trámite, con carácter general:",["No son recurribles de forma autónoma, salvo que decidan directa o indirectamente el fondo del asunto","Son siempre recurribles igual que los actos definitivos","Ponen siempre fin al procedimiento","Carecen de cualquier efecto jurídico"],0],
+[30,"La notificación defectuosa de un acto administrativo puede subsanarse mediante:",["Actuaciones que acrediten la fecha en que el interesado tuvo conocimiento del contenido del acto","Su anulación automática en todo caso","La pérdida definitiva de eficacia del acto","La imposibilidad absoluta de subsanación"],0],
+[30,"La eficacia de un acto administrativo puede quedar demorada cuando:",["así lo exija el propio contenido del acto, o esté supeditada a su notificación, publicación o aprobación superior","nunca, pues los actos son siempre inmediatamente eficaces","lo decida discrecionalmente la persona interesada","el acto se haya dictado de forma verbal"],0],
+[30,"La suspensión de la eficacia de un acto administrativo mientras se resuelve un recurso puede acordarse cuando:",["Su ejecución pudiera causar perjuicios de difícil o imposible reparación, u otras causas legalmente previstas","Lo solicite cualquier persona sin motivación","El acto sea favorable a quien recurre","Nunca resulta posible legalmente"],0],
+[30,"La inexistencia de un acto administrativo se diferencia de su nulidad en que:",["El acto inexistente carece de los elementos mínimos para ser considerado tal acto jurídico","Son conceptos jurídicos equivalentes en todo caso","La inexistencia siempre requiere declaración judicial previa","La nulidad no produce ningún efecto jurídico"],0],
+[30,"Los actos favorables, a diferencia de los actos de gravamen, se caracterizan por:",["Ampliar derechos o facultades de la persona interesada","Imponer siempre una sanción","Reducir derechos existentes","Ser siempre irrecurribles"],0],
+
+[31,"El principio de economía procedimental exige:",["Simplificar los trámites y evitar actuaciones innecesarias en la tramitación","Multiplicar los trámites para mayor garantía","Ignorar los plazos legales","Excluir a las personas interesadas de la tramitación"],0],
+[31,"La acumulación de procedimientos puede acordarse, entre otros supuestos, cuando:",["Exista identidad sustancial o íntima conexión entre ellos","No exista ninguna relación entre los expedientes","Lo soliciten personas ajenas al procedimiento","El órgano competente sea distinto en cada uno de ellos"],0],
+[31,"Las personas interesadas tienen derecho a conocer, en cualquier momento del procedimiento:",["El estado de la tramitación en que se encuentre","El contenido de expedientes ajenos sin relación alguna","Información reservada de terceros sin causa","La decisión final antes de que se dicte"],0],
+[31,"La legitimación activa en un procedimiento administrativo exige, entre otros requisitos:",["Ostentar un derecho o interés legítimo afectado por la actuación administrativa","Ser exclusivamente persona física","Residir en el mismo municipio que el órgano actuante","Carecer de cualquier vinculación con el asunto"],0],
+[31,"La actuación de la Administración debe regirse, entre otros principios, por el de:",["Proporcionalidad, evitando restricciones de derechos superiores a las necesarias","Arbitrariedad en la elección de medios","Opacidad frente a la ciudadanía","Subordinación exclusiva al interés del órgano actuante"],0],
+[31,"Un interesado puede actuar en el procedimiento asistido de:",["Asesoramiento cuando lo considere conveniente para la defensa de sus intereses","Representación obligatoria en todo caso","Ningún tipo de asistencia","Un funcionario designado de oficio sin posibilidad de elección"],0],
+
+[32,"La subsanación de defectos en la solicitud de inicio de un procedimiento debe requerirse:",["En un plazo determinado, con indicación de que si no se subsana se tendrá por desistido","Sin plazo alguno, de forma indefinida","Únicamente de oficio, sin comunicación al interesado","Nunca, procediendo directamente al archivo sin trámite"],0],
+[32,"La información pública en el procedimiento administrativo permite:",["Que cualquier persona, no solo la interesada, pueda formular alegaciones sobre un expediente","Limitar la participación exclusivamente a los interesados directos","Sustituir a la resolución final","Eliminar la necesidad de motivación del acto"],0],
+[32,"Los informes en el procedimiento administrativo son, con carácter general:",["Facultativos y no vinculantes, salvo que la norma disponga otra cosa","Siempre preceptivos y vinculantes sin excepción","Innecesarios en cualquier procedimiento","Sustitutivos de la resolución final"],0],
+[32,"La prueba en el procedimiento administrativo puede practicarse por cualquier medio:",["Admitido en Derecho, adecuado al objeto del procedimiento","Exclusivamente documental","Exclusivamente testifical","Exclusivamente pericial"],0],
+[32,"El desistimiento se diferencia de la renuncia en que:",["El desistimiento afecta al procedimiento concreto, mientras que la renuncia afecta al derecho subyacente","Son conceptos jurídicos idénticos en todo caso","El desistimiento siempre impide iniciar un nuevo procedimiento sobre el mismo objeto","La renuncia únicamente puede ejercerla la Administración"],0],
+[32,"La resolución expresa que ponga fin al procedimiento debe decidir:",["Todas las cuestiones planteadas por las personas interesadas y las derivadas del expediente","Únicamente la cuestión de fondo, sin pronunciarse sobre trámite alguno","Exclusivamente lo solicitado en la fase de alegaciones","Exclusivamente lo dictaminado por informes no vinculantes"],0],
+
+[33,"Un acto es firme en vía administrativa cuando:",["No cabe contra él ningún recurso ordinario en dicha vía","Ha sido recurrido ante los tribunales","Ha sido objeto de revisión de oficio","Carece de motivación"],0],
+[33,"La lesividad de un acto favorable declarado por la propia Administración exige, como paso posterior:",["Su impugnación ante el orden jurisdiccional contencioso-administrativo","Su anulación directa sin más trámite","Su ratificación por el Parlamento","Su publicación exclusivamente en el tablón de anuncios"],0],
+[33,"El error en la calificación del recurso interpuesto por la persona interesada:",["No será obstáculo para su tramitación, siempre que se deduzca su verdadero carácter","Determina la inadmisión automática del recurso","Obliga a interponer un nuevo recurso desde el principio","Impide cualquier resolución sobre el fondo"],0],
+[33,"Transcurrido el plazo máximo sin haberse notificado la resolución de un recurso de alzada, este se entiende, con carácter general:",["desestimado, pudiendo la persona interesada acudir a la vía siguiente que proceda","estimado automáticamente en todo caso","archivado sin posibilidad de recurso ulterior","anulado de pleno derecho"],0],
+[33,"El silencio administrativo en la resolución de un recurso de alzada, transcurrido el plazo legal, se entiende, con carácter general:",["Desestimado, a los efectos de acudir a la vía siguiente","Estimado en todo caso sin excepción","Irrelevante jurídicamente","Causa de nulidad del acto originario"],0],
+[33,"La reformatio in peius, es decir, agravar la situación inicial del recurrente respecto del acto impugnado, está:",["Prohibida, con carácter general, en la resolución de recursos administrativos","Permitida sin ninguna limitación","Permitida solo si lo solicita un tercero","Permitida siempre que el recurso sea de alzada"],0],
+
+[34,"La responsabilidad patrimonial de la Administración es compatible con la exigencia de responsabilidad:",["Disciplinaria o penal del personal, cuando proceda, de forma independiente","Nunca, pues son mutuamente excluyentes","Exclusivamente penal, excluyendo la disciplinaria","Exclusivamente civil, excluyendo cualquier otra vía"],0],
+[34,"El procedimiento de responsabilidad patrimonial puede iniciarse:",["De oficio o a instancia de la persona interesada","Únicamente de oficio","Únicamente a instancia de parte","Únicamente por orden judicial"],0],
+[34,"La fuerza mayor, a diferencia del caso fortuito, se considera con carácter general:",["Causa de exoneración de la responsabilidad patrimonial de la Administración","Irrelevante a estos efectos","Una modalidad de responsabilidad objetiva agravada","Aplicable únicamente en el ámbito contractual"],0],
+[34,"La responsabilidad patrimonial derivada de la actuación de contratistas o concesionarios de servicios públicos se rige, con carácter general, por:",["Las reglas específicas previstas en la normativa de contratos del sector público, sin perjuicio de la responsabilidad de la Administración en su caso","La exclusión total de responsabilidad para la Administración en cualquier caso","La responsabilidad penal exclusiva del contratista","La ausencia de cualquier regulación al respecto"],0],
+[34,"La acción de responsabilidad patrimonial frente a la Administración es, con carácter general:",["Compatible con el ejercicio de otras acciones cuando la normativa lo permita, respetando los plazos de prescripción","Imprescriptible en todo caso","Incompatible con cualquier otra acción","Exclusivamente civil, excluyendo la vía administrativa"],0],
+[12,"La disposición del teclado y el ratón en un puesto con PVD debe permitir:",["una postura de manos y muñecas relajada, evitando extensiones forzadas","el uso continuado sin ningún tipo de apoyo","una altura fija idéntica para todas las personas usuarias, sin ajuste","prescindir de cualquier soporte o reposamuñecas"],0],
+[22,"La factura electrónica en el ámbito de las administraciones públicas debe garantizar, entre otros aspectos:",["su autenticidad e integridad mediante los mecanismos previstos legalmente","su impresión obligatoria en papel para tener validez","la ausencia de cualquier control por parte de la Administración","la imposibilidad de su archivo electrónico"],0]
+];
+
+/* ============ STORAGE (window.storage con fallback a localStorage) ============ */
+async function storageGet(key){
+  try{ if(window.storage){ const r = await window.storage.get(key); return r ? r.value : null; } }catch(e){}
+  try{ return localStorage.getItem(key); }catch(e){}
+  return null;
+}
+async function storageSet(key,value){
+  try{ if(window.storage){ await window.storage.set(key,value); return; } }catch(e){}
+  try{ localStorage.setItem(key,value); }catch(e){}
+}
+
+/* ============ STATE ============ */
+let customQuestions = [];
+let failedIds = new Set();
+let temaStats = {}; // {tema: {attempts, correct}}
+let darkMode = false;
+let selectedTemas = new Set(Object.keys(TEMAS).map(Number));
+let quizPool = [];
+let currentIndex = 0;
+let answers = [];
+let view = "splash";
+let penaltyFraction = 0; // 0, 1/3, 1/4
+let timeLimitMin = 0;
+let quizEndTime = null;
+let timerInterval = null;
+let sourceMode = "temas"; // "temas" | "fallos"
+
+function buildAll(){
+  const out=[];
+  QUESTIONS.forEach((q,i)=> out.push({id:'b'+i, tema:q[0], question:q[1], options:q[2], correct:q[3], explanation:q[4]||null}));
+  customQuestions.forEach((q,i)=> out.push({id:'c'+i, tema:q[0], question:q[1], options:q[2], correct:q[3], explanation:q[4]||null}));
+  return out;
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+async function loadAll(){
+  try{ const c = await storageGet('custom_questions'); if(c) customQuestions = JSON.parse(c); }catch(e){}
+  try{ const f = await storageGet('failed_ids'); if(f) failedIds = new Set(JSON.parse(f)); }catch(e){}
+  try{ const s = await storageGet('tema_stats'); if(s) temaStats = JSON.parse(s); }catch(e){}
+  try{ const d = await storageGet('dark_mode'); if(d) darkMode = d === '1'; }catch(e){}
+  applyDarkMode();
+  render();
+}
+function applyDarkMode(){ document.body.classList.toggle('dark', darkMode); }
+
+async function persistFailed(){ await storageSet('failed_ids', JSON.stringify(Array.from(failedIds))); }
+async function persistStats(){ await storageSet('tema_stats', JSON.stringify(temaStats)); }
+async function persistCustom(){ await storageSet('custom_questions', JSON.stringify(customQuestions)); }
+async function persistDark(){ await storageSet('dark_mode', darkMode ? '1':'0'); }
+
+/* ============ RENDER ============ */
+function render(){
+  const app = document.getElementById('app');
+  if(view==="splash") app.innerHTML = renderSplash();
+  else if(view==="home") app.innerHTML = renderHome();
+  else if(view==="quiz") app.innerHTML = renderQuiz();
+  else if(view==="results") app.innerHTML = renderResults();
+  else if(view==="import") app.innerHTML = renderImport();
+  else if(view==="stats") app.innerHTML = renderStats();
+  attachHandlers();
+  startTimerIfNeeded();
+}
+
+function renderSplash(){
+  return `
+  <div class="splash" id="splashScreen">
+    <div class="splash-flag"></div>
+    <h1 class="splash-title">Ope IVAP 2026</h1>
+    <p class="splash-subtitle">Escala Administrativa</p>
+    <div class="splash-rule"></div>
+    <p class="splash-hint">Toca para empezar</p>
+  </div>
+  <div class="splash-credit">Creado por Raúl Rodríguez</div>
+  `;
+}
+
+function headerHtml(title, tag){
+  return `<header class="app">
+    <h1><span class="flag"></span>${title}</h1>
+    <div class="headerRight">
+      <div class="tag">${tag}</div>
+      <button class="iconBtn" id="darkToggle" title="Modo oscuro">${darkMode?'☀':'☾'}</button>
+    </div>
+  </header>`;
+}
+
+function renderHome(){
+  const total = allQuestions_count();
+  const temaItems = Object.entries(TEMAS).map(([num,name])=>{
+    const checked = selectedTemas.has(Number(num)) ? "checked" : "";
+    return `<label class="tema-item"><input type="checkbox" data-tema="${num}" ${checked}> <span><b>${num}.</b> ${name}</span></label>`;
+  }).join("");
+
+  return `
+  ${headerHtml("Test · Cuerpo Administrativo", total + " preguntas")}
+
+  <div class="card">
+    <h2 class="section">1 · Fuente de preguntas</h2>
+    <div class="radioRow">
+      <label><input type="radio" name="srcMode" value="temas" ${sourceMode==='temas'?'checked':''}> Temas seleccionados</label>
+      <label><input type="radio" name="srcMode" value="fallos" ${sourceMode==='fallos'?'checked':''}> Repasar solo mis fallos (${failedIds.size})</label>
+    </div>
+    <div id="temaSection" style="${sourceMode==='fallos'?'display:none;':''}">
+      <div class="tema-actions">
+        <a id="selAll">Marcar todos</a>
+        <a id="selNone">Desmarcar todos</a>
+      </div>
+      <div class="tema-grid">${temaItems}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section">2 · Configuración del test</h2>
+    <div class="row" style="margin-bottom:12px;">
+      <span class="small" style="width:150px;">Nº de preguntas</span>
+      <input type="number" min="1" max="${total}" value="20" class="num-input" id="numQ">
+      <span class="small">(máx. <span id="maxAvail">${total}</span> según tu selección)</span>
+    </div>
+    <div class="row" style="margin-bottom:12px;">
+      <span class="small" style="width:150px;">Tiempo límite</span>
+      <input type="number" min="0" value="0" class="num-input" id="timeLimit">
+      <span class="small">minutos (0 = sin límite)</span>
+    </div>
+    <div class="row">
+      <span class="small" style="width:150px;">Penalización por fallo</span>
+      <select class="field" id="penaltySel">
+        <option value="0">Sin penalización</option>
+        <option value="0.3333">−1/3 de punto por fallo</option>
+        <option value="0.25">−1/4 de punto por fallo</option>
+      </select>
+    </div>
+    <p class="small" style="margin-top:10px;">Si tu convocatoria del IVAP aplica una penalización concreta, actívala aquí para entrenar en condiciones de examen real. Consulta las bases oficiales para confirmar la fórmula exacta.</p>
+  </div>
+
+  <button class="btn wide" id="startBtn" style="font-size:1rem;padding:14px;">Empezar test</button>
+
+  <div class="card" style="margin-top:24px;">
+    <h2 class="section">Seguimiento</h2>
+    <div class="row">
+      <button class="btn secondary" id="goStats">Ver estadísticas por tema</button>
+      <button class="btn secondary" id="goImport">Añadir preguntas propias</button>
+    </div>
+    <p class="small" style="margin-top:12px;">Banco actual: ${QUESTIONS.length} preguntas propias + ${customQuestions.length} añadidas por ti. Cada vez que haces un test, tus fallos se guardan automáticamente para el modo "Repasar fallos", y tus aciertos por tema se acumulan en las estadísticas.</p>
+  </div>
+
+  <div style="text-align:center;margin-top:26px;">
+    <p class="small" style="font-family: ui-monospace, Menlo, monospace; letter-spacing:.04em;">Creado por Raúl Rodríguez</p>
+  </div>
+  `;
+}
+
+function allQuestions_count(){ return QUESTIONS.length + customQuestions.length; }
+
+function renderQuiz(){
+  const q = quizPool[currentIndex];
+  const answered = answers[currentIndex];
+  const progressPct = Math.round((currentIndex/quizPool.length)*100);
+  const letters = ["A","B","C","D"];
+
+  const optionsHtml = q.options.map((opt,i)=>{
+    let cls = "option";
+    if(answered){
+      cls += " disabled";
+      if(i===q.correct) cls += " correct";
+      else if(i===answered.chosen) cls += " wrong";
+    }
+    return `<div class="${cls}" data-opt="${i}"><span class="letter">${letters[i]}</span><span>${opt}</span></div>`;
+  }).join("");
+
+  let feedback = "";
+  if(answered){
+    if(answered.chosen === q.correct){
+      feedback = `<div class="feedback ok">Correcto.</div>`;
+    } else if(answered.chosen === null){
+      feedback = `<div class="feedback no">Sin responder. La correcta es la <b>${letters[q.correct]}</b>.</div>`;
+    } else {
+      feedback = `<div class="feedback no">Incorrecto. La respuesta correcta es la <b>${letters[q.correct]}</b>.</div>`;
+    }
+    if(q.explanation){
+      feedback += `<div class="small" style="margin-top:6px;">${q.explanation}</div>`;
+    }
+  }
+
+  const timerHtml = quizEndTime ? `<div id="timerDisplay" class="timerBox">--:--</div>` : "";
+
+  return `
+  <header class="app">
+    <h1>Test en curso</h1>
+    <div class="headerRight">
+      ${timerHtml}
+      <div class="tag">${currentIndex+1} / ${quizPool.length}</div>
+    </div>
+  </header>
+  <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+  <div class="card">
+    <div class="qmeta"><span>Tema ${q.tema} · ${TEMAS[q.tema]||''}</span></div>
+    <p class="qtext">${q.question}</p>
+    ${optionsHtml}
+    ${feedback}
+  </div>
+  <div class="footer-nav">
+    <button class="btn secondary" id="quitBtn">Salir</button>
+    <button class="btn" id="nextBtn" ${answered?'':'disabled'}>${currentIndex===quizPool.length-1?'Ver resultados':'Siguiente'}</button>
+  </div>
+  `;
+}
+
+function renderResults(){
+  const total = quizPool.length;
+  let correctCount=0, wrongCount=0, blankCount=0, netScore=0;
+  answers.forEach((a,i)=>{
+    const q = quizPool[i];
+    if(a.chosen===null){ blankCount++; }
+    else if(a.chosen===q.correct){ correctCount++; netScore += 1; }
+    else{ wrongCount++; netScore -= penaltyFraction; }
+  });
+  const notaSobre10 = (netScore/total*10).toFixed(2);
+
+  const byTema = {};
+  answers.forEach((a,i)=>{
+    const q = quizPool[i];
+    if(!byTema[q.tema]) byTema[q.tema] = {ok:0,total:0};
+    byTema[q.tema].total++;
+    if(a.chosen===q.correct) byTema[q.tema].ok++;
+  });
+  const temaRows = Object.entries(byTema).sort((a,b)=>a[0]-b[0]).map(([tema,v])=>{
+    return `<div class="tema-result"><span>Tema ${tema} · ${TEMAS[tema]}</span><span class="badge">${v.ok}/${v.total}</span></div>`;
+  }).join("");
+
+  const wrongList = answers.map((a,i)=>({a,q:quizPool[i]})).filter(x=>x.a.chosen!==x.q.correct).map(({a,q})=>{
+    const letters=["A","B","C","D"];
+    const tuResp = a.chosen===null ? "sin responder" : `${letters[a.chosen]}) ${q.options[a.chosen]}`;
+    return `<div class="card" style="padding:16px;">
+      <div class="qmeta">Tema ${q.tema}</div>
+      <p style="margin:0 0 8px;font-size:.95rem;">${q.question}</p>
+      <p class="small" style="margin:0;">Tu respuesta: ${tuResp}<br>Correcta: ${letters[q.correct]}) ${q.options[q.correct]}</p>
+    </div>`;
+  }).join("");
+
+  return `
+  ${headerHtml("Resultados", total + " preguntas")}
+  <div class="card" style="text-align:center;">
+    <div class="score-big">${correctCount}/${total}</div>
+    <div class="small" style="margin-top:6px;">${correctCount} aciertos · ${wrongCount} fallos · ${blankCount} en blanco</div>
+    ${penaltyFraction>0 ? `<div class="small" style="margin-top:10px;">Nota con penalización: <b>${netScore.toFixed(2)}</b> puntos (${notaSobre10} sobre 10)</div>` : ""}
+  </div>
+  <div class="card">
+    <h2 class="section">Resultado por tema</h2>
+    ${temaRows}
+  </div>
+  ${wrongList ? `<h2 class="section" style="margin:20px 0 12px;">Repaso de fallos</h2>${wrongList}` : `<p class="small">¡Sin fallos! Buen trabajo.</p>`}
+  <div class="row" style="margin-top:16px;">
+    <button class="btn wide" id="backHome">Volver al inicio</button>
+    ${wrongCount>0 ? `<button class="btn secondary wide" id="exportFails">Exportar fallos (.txt)</button>` : ""}
+  </div>
+  `;
+}
+
+function renderStats(){
+  const rows = Object.entries(TEMAS).map(([num,name])=>{
+    const st = temaStats[num] || {attempts:0, correct:0};
+    const pct = st.attempts>0 ? Math.round(st.correct/st.attempts*100) : null;
+    return {num,name,attempts:st.attempts,correct:st.correct,pct};
+  }).sort((a,b)=>{
+    if(a.pct===null && b.pct===null) return a.num-b.num;
+    if(a.pct===null) return 1;
+    if(b.pct===null) return -1;
+    return a.pct-b.pct;
+  });
+
+  const rowsHtml = rows.map(r=>{
+    const pctDisplay = r.pct===null ? "—" : r.pct+"%";
+    const barWidth = r.pct===null ? 0 : r.pct;
+    return `<div class="statRow">
+      <span class="name">T${r.num} · ${r.name}</span>
+      <div class="statBar"><div style="width:${barWidth}%"></div></div>
+      <span class="pct">${pctDisplay}</span>
+    </div>`;
+  }).join("");
+
+  return `
+  ${headerHtml("Estadísticas", "por tema")}
+  <div class="card">
+    <p class="small">Acumulado de todas tus sesiones de test, ordenado de peor a mejor % de acierto, para ver de un vistazo qué temas tienes más flojos.</p>
+    ${rowsHtml}
+  </div>
+  <div class="row">
+    <button class="btn wide" id="backHome3">Volver al inicio</button>
+    <button class="link-btn" id="resetStats">Reiniciar estadísticas</button>
+  </div>
+  `;
+}
+
+function renderImport(){
+  return `
+  ${headerHtml("Añadir preguntas", "formato JSON")}
+  <div class="card">
+    <p class="small">Pega aquí un array JSON con tus preguntas: tema, pregunta, 4 opciones, índice 0-3 de la correcta (y opcionalmente una breve explicación que tú mismo hayas verificado):</p>
+    <pre class="small" style="background:var(--paper);padding:10px;border-radius:3px;overflow-x:auto;">[[1,"¿Pregunta?",["Op A","Op B","Op C","Op D"],0,"Explicación opcional"]]</pre>
+    <textarea id="importArea" placeholder="Pega tu JSON aquí..."></textarea>
+    <div id="importMsg" class="small" style="margin-top:8px;"></div>
+    <div class="row" style="margin-top:14px;">
+      <button class="btn" id="importBtn">Añadir al banco</button>
+      <button class="btn secondary" id="backHome2">Volver</button>
+    </div>
+  </div>
+  <div class="card">
+    <p class="small">Tienes actualmente <b>${customQuestions.length}</b> preguntas propias guardadas. Pídeme en el chat más preguntas de un tema concreto y te las paso en este formato.</p>
+    ${customQuestions.length ? `<button class="link-btn" id="clearCustom">Borrar todas mis preguntas añadidas</button>` : ""}
+  </div>
+  `;
+}
+
+/* ============ HANDLERS ============ */
+function attachHandlers(){
+  const splash = document.getElementById('splashScreen');
+  if(splash) splash.onclick = ()=>{ view="home"; render(); };
+
+  const dt = document.getElementById('darkToggle');
+  if(dt) dt.onclick = async ()=>{ darkMode=!darkMode; applyDarkMode(); await persistDark(); render(); };
+
+  if(view==="home"){
+    document.querySelectorAll('[data-tema]').forEach(cb=>{
+      cb.addEventListener('change',e=>{
+        const n = Number(e.target.dataset.tema);
+        if(e.target.checked) selectedTemas.add(n); else selectedTemas.delete(n);
+        updateMaxAvail();
+      });
+    });
+    document.querySelectorAll('input[name="srcMode"]').forEach(r=>{
+      r.addEventListener('change', e=>{ sourceMode = e.target.value; render(); });
+    });
+    document.getElementById('selAll').onclick=()=>{selectedTemas=new Set(Object.keys(TEMAS).map(Number));render();};
+    document.getElementById('selNone').onclick=()=>{selectedTemas=new Set();render();};
+    document.getElementById('startBtn').onclick=startQuiz;
+    document.getElementById('goImport').onclick=()=>{view="import";render();};
+    document.getElementById('goStats').onclick=()=>{view="stats";render();};
+    updateMaxAvail();
+  } else if(view==="quiz"){
+    document.querySelectorAll('.option').forEach(el=>{
+      el.addEventListener('click',()=>{
+        if(answers[currentIndex]) return;
+        const chosen = Number(el.dataset.opt);
+        answers[currentIndex] = {chosen};
+        render();
+      });
+    });
+    document.getElementById('quitBtn').onclick=()=>{ clearInterval(timerInterval); view="home"; render(); };
+    const nb = document.getElementById('nextBtn');
+    if(nb) nb.onclick=()=>{
+      if(currentIndex===quizPool.length-1){ finalizeQuiz(); }
+      else{ currentIndex++; render(); }
+    };
+  } else if(view==="results"){
+    document.getElementById('backHome').onclick=()=>{view="home";render();};
+    const exp = document.getElementById('exportFails');
+    if(exp) exp.onclick = exportFails;
+  } else if(view==="import"){
+    document.getElementById('importBtn').onclick=handleImport;
+    document.getElementById('backHome2').onclick=()=>{view="home";render();};
+    const clr = document.getElementById('clearCustom');
+    if(clr) clr.onclick=async ()=>{ customQuestions=[]; await persistCustom(); render(); };
+  } else if(view==="stats"){
+    document.getElementById('backHome3').onclick=()=>{view="home";render();};
+    document.getElementById('resetStats').onclick=async ()=>{
+      if(confirm("¿Reiniciar todo el historial de estadísticas por tema?")){
+        temaStats = {}; await persistStats(); render();
+      }
+    };
+  }
+}
+
+function updateMaxAvail(){
+  const avail = buildAll().filter(q=>selectedTemas.has(q.tema)).length;
+  const maxEl = document.getElementById('maxAvail');
+  const numQ = document.getElementById('numQ');
+  if(maxEl) maxEl.textContent = avail;
+  if(numQ) numQ.max = Math.max(1,avail);
+}
+
+function startQuiz(){
+  const all = buildAll();
+  let pool;
+  if(sourceMode==="fallos"){
+    pool = all.filter(q=>failedIds.has(q.id));
+    if(pool.length===0){ alert("Todavía no tienes preguntas falladas guardadas."); return; }
+  } else {
+    pool = all.filter(q=>selectedTemas.has(q.tema));
+    if(pool.length===0){ alert("Selecciona al menos un tema."); return; }
+  }
+  let n = Number(document.getElementById('numQ').value) || pool.length;
+  n = Math.min(Math.max(n,1), pool.length);
+  penaltyFraction = Number(document.getElementById('penaltySel').value) || 0;
+  timeLimitMin = Number(document.getElementById('timeLimit').value) || 0;
+
+  quizPool = shuffle(pool).slice(0,n);
+  currentIndex = 0;
+  answers = [];
+  quizEndTime = timeLimitMin>0 ? (Date.now() + timeLimitMin*60000) : null;
+  view = "quiz";
+  render();
+}
+
+function startTimerIfNeeded(){
+  clearInterval(timerInterval);
+  if(view!=="quiz" || !quizEndTime) return;
+  timerInterval = setInterval(()=>{
+    const remain = quizEndTime - Date.now();
+    const el = document.getElementById('timerDisplay');
+    if(remain<=0){
+      clearInterval(timerInterval);
+      forceFinishByTime();
+      return;
+    }
+    if(el){
+      const m = Math.floor(remain/60000);
+      const s = Math.floor((remain%60000)/1000);
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.classList.toggle('low', remain < 60000);
+    }
+  },500);
+}
+
+function forceFinishByTime(){
+  for(let i=0;i<quizPool.length;i++){
+    if(!answers[i]) answers[i] = {chosen:null};
+  }
+  finalizeQuiz();
+}
+
+async function finalizeQuiz(){
+  clearInterval(timerInterval);
+  quizPool.forEach((q,i)=>{
+    const a = answers[i];
+    if(!temaStats[q.tema]) temaStats[q.tema] = {attempts:0, correct:0};
+    temaStats[q.tema].attempts++;
+    if(a && a.chosen===q.correct){
+      temaStats[q.tema].correct++;
+      failedIds.delete(q.id);
+    } else {
+      failedIds.add(q.id);
+    }
+  });
+  await persistStats();
+  await persistFailed();
+  view = "results";
+  render();
+}
+
+function exportFails(){
+  const letters=["A","B","C","D"];
+  let text = "Repaso de fallos - Test Cuerpo Administrativo\n" + new Date().toLocaleString() + "\n\n";
+  answers.forEach((a,i)=>{
+    const q = quizPool[i];
+    if(a.chosen!==q.correct){
+      text += `Tema ${q.tema} - ${TEMAS[q.tema]}\n`;
+      text += q.question + "\n";
+      q.options.forEach((opt,idx)=>{ text += `  ${letters[idx]}) ${opt}${idx===q.correct?'  <-- correcta':''}\n`; });
+      text += `Tu respuesta: ${a.chosen===null?'sin responder':letters[a.chosen]}\n\n`;
+    }
+  });
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = "fallos_test_oposicion.txt";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function handleImport(){
+  const raw = document.getElementById('importArea').value.trim();
+  const msg = document.getElementById('importMsg');
+  if(!raw){ msg.textContent=""; return; }
+  try{
+    const parsed = JSON.parse(raw);
+    if(!Array.isArray(parsed)) throw new Error("no es un array");
+    let added = 0;
+    parsed.forEach(item=>{
+      if(Array.isArray(item) && item.length>=4 && typeof item[0]==="number" && typeof item[1]==="string" && Array.isArray(item[2]) && item[2].length===4 && typeof item[3]==="number"){
+        customQuestions.push(item);
+        added++;
+      }
+    });
+    msg.textContent = `Se añadieron ${added} preguntas correctamente.`;
+    msg.style.color = "var(--green)";
+    persistCustom();
+    document.getElementById('importArea').value = "";
+    setTimeout(render, 900);
+  }catch(e){
+    msg.textContent = "El formato no es válido. Revisa el ejemplo de arriba.";
+    msg.style.color = "var(--red)";
+  }
+}
+
+loadAll();
+</script>
+</body>
+</html>
