@@ -1,6 +1,6 @@
 {
   "name": "Ope IVAP 2026 - Escala Administrativa",
-  "short_name": "Ope IVAP",
+  "short_name": "Admin IVAP",
   "description": "Test de repaso para la oposición IVAP - Escala Administrativa. Creado por Raúl Rodríguez.",
   "start_url": "./index.html",
   "scope": "./",
